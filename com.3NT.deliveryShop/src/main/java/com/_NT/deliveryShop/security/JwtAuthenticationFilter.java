@@ -53,7 +53,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         // JSON 형태로 응답 작성
         response.setContentType("application/json");
-        response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
         // JWT 토큰을 JSON으로 감싸서 응답에 작성
