@@ -1,6 +1,5 @@
 package com._NT.deliveryShop.security;
 
-import com._NT.deliveryShop.domain.dto.LoginRequestDto;
 import com._NT.deliveryShop.domain.dto.UserDto;
 import com._NT.deliveryShop.domain.entity.UserRoleEnum;
 import com._NT.deliveryShop.util.JwtUtil;
