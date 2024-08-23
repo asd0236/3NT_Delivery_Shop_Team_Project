@@ -7,14 +7,14 @@
       </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_17">
+  <component name="NewModuleRootManager">
     <output url="file://$MODULE_DIR$/../../com.3NT.deliveryShop/build/classes/java/main" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../com.3NT.deliveryShop/src/main">
       <sourceFolder url="file://$MODULE_DIR$/../../com.3NT.deliveryShop/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../com.3NT.deliveryShop/src/main/resources" type="java-resource" />
     </content>
-    <orderEntry type="jdk" jdkName="17" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.projectlombok:lombok:1.18.34" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-data-jpa:3.3.3" level="project" />

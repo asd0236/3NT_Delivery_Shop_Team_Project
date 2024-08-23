@@ -10,10 +10,6 @@
         <module name="com.3NT.deliveryShop.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="com.3NT.deliveryShop" target="17" />
-      <module name="com.3NT.deliveryShop.main" target="17" />
-      <module name="com.3NT.deliveryShop.test" target="17" />
-    </bytecodeTargetLevel>
+    <bytecodeTargetLevel target="17" />
   </component>
 </project>
