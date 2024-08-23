@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Getter
 @NoArgsConstructor
 @Table(name = "p_users")
-public class User {
+public class User extends Timestamped{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,19 +41,5 @@ public class User {
         this.mobileNumber = mobileNumber;
         this.role = role;
     }
-
-    @Column(nullable = false)
-    @CreationTimestamp
-    private LocalDate createdAt;
-    private Long createdBy;
-
-    @UpdateTimestamp
-    private LocalDate updatedAt;
-    private Long updatedBy;
-
-    private LocalDate deletedAt;
-    private Long deletedBy;
-
-    private Boolean isDeleted;
 
 }
