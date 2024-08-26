@@ -56,7 +56,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.setCharacterEncoding("UTF-8");
 
         // JWT 토큰을 JSON으로 감싸서 응답에 작성
-        String jsonResponse = String.format("{\"token\": \"%s\"}", token);
+        String jsonResponse = String.format("{\"token\": \"%s\"}", token.substring(7));
         response.getWriter().write(jsonResponse);
     }
 
