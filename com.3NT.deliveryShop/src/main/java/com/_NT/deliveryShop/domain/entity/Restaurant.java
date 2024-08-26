@@ -28,8 +28,9 @@ public class Restaurant extends Timestamped {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "owner_id", nullable = false)
-    private UUID ownerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(name = "mobile_number", nullable = false)
     private String mobileNumber;
