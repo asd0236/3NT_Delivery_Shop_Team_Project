@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -24,6 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity // Spring Security 지원을 가능하게 함
 @RequiredArgsConstructor
 @Slf4j
+@EnableMethodSecurity // @PreAuthorize 어노테이션 도입
 public class WebSecurityConfig {
 
     private final JwtUtil jwtUtil;
@@ -66,8 +68,9 @@ public class WebSecurityConfig {
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
                         .requestMatchers("/").permitAll() // 메인 페이지 요청 허가
+                        .requestMatchers("/error").permitAll() // 에러 페이지 요청 허가
                         .requestMatchers("/api/v1/users").permitAll() // 회원가입 페이지 요청 허가
-                        .requestMatchers("/api/v1/users/**").permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
+                        .requestMatchers("/api/v1/users/login").permitAll() // 로그인 페이지 요청 허가
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 
