@@ -42,4 +42,12 @@ public class User extends Timestamped{
         this.role = role;
     }
 
+    public void modifyUser(String username, String password, String email, String mobileNumber, UserRoleEnum role){
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.mobileNumber = mobileNumber;
+        this.role = role;
+    }
+
 }
