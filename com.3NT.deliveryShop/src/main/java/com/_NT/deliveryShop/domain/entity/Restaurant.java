@@ -44,6 +44,6 @@ public class Restaurant extends Timestamped {
     @Column(name = "business_end_hours", nullable = false)
     private LocalDateTime businessEndHours;
 
-    @Column(name = "imageURL", nullable = false)
+    @Column(name = "image_url", nullable = false)
     private String imageURL;
 }

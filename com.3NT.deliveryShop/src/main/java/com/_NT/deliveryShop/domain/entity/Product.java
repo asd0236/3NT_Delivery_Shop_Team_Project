@@ -8,7 +8,7 @@ import org.hibernate.annotations.GenericGenerator;
 import java.util.UUID;
 
 @Entity
-@Table(name = "p_payment")
+@Table(name = "p_product")
 @Getter
 @NoArgsConstructor
 public class Product extends Timestamped {
@@ -32,6 +32,6 @@ public class Product extends Timestamped {
     @Column(name = "price", nullable = false)
     private int price;
 
-    @Column(name = "imageURL", nullable = false)
+    @Column(name = "image_url", nullable = false)
     private String imageURL;
 }
