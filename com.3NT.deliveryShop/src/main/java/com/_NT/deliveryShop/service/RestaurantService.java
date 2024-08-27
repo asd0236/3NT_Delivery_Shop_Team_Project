@@ -48,6 +48,7 @@ public class RestaurantService {
         Category category = categoryService.createCategory(categoryDto);
 
         Restaurant restaurant = dto.asEntity(it -> it
+            .withOwner(owner)
             .withCategory(category));
 
         return Result.of(restaurantRepository.save(restaurant));
