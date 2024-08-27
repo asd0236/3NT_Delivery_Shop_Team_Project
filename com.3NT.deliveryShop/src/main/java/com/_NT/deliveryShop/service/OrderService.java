@@ -10,6 +10,10 @@ import com._NT.deliveryShop.repository.OrderRepository;
 import com._NT.deliveryShop.repository.PaymentRepository;
 import com._NT.deliveryShop.repository.RestaurantReposiotry;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +44,8 @@ public class OrderService {
         // 배송지 정보 조회
         DeliveryInfo deliveryInfo = deliveryInfoRepository.findById(orderRequestDto.getDeliveryInfoId()).orElseThrow(
                 () -> new NullPointerException("해당 배송지 정보가 존재하지 않습니다."));
+
+        // 상품 정보 조회
 
         // 주문 생성(주문 생성 시 주문 상태는 PAYMENT_PENDING)
         Order order = new Order(user, restaurant, null, deliveryInfo, OrderStatus.PAYMENT_PENDING, orderRequestDto.getIsOnline());
@@ -121,5 +127,39 @@ public class OrderService {
         }
     }
 
-}
+    /**
+     * 주문 전체 조회를 수행합니다.
+     * @param page : 페이지 번호를 전달 받습니다.
+     * @param size : 페이지 사이즈를 전달 받습니다.
+     * @param sortBy : 정렬 기준을 전달 받습니다.(ex. createdAt)
+     * @param isAsc : 정렬 방향을 전달 받습니다.(true: 오름차순, false: 내림차순)
+     * @param user : 사용자 정보를 전달 받습니다.
+     * @return : 주문 정보를 반환합니다.
+     */
+    @Transactional(readOnly = true)
+    public Page<OrderResponseDto> getAllOrders(int page, int size, String sortBy, boolean isAsc, User user) {
+        // 정렬 방향 설정
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        // 정렬기준 sortBy, 정렬 방향isAsc로 정렬
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
 
+        // 사용자 권한 가져와서 ADMIN, OWNER, USER만 주문 조회
+        UserRoleEnum userRole = user.getRole();
+
+        Page<Order> orderList;
+
+        if (userRole == UserRoleEnum.ADMIN) {
+            // 사용자 권한이 ADMIN일 경우
+            orderList = orderRepository.findAll(pageable);
+        } else if (userRole == UserRoleEnum.OWNER) {
+            // 사용자 권한이 OWNER일 경우
+            orderList = orderRepository.findAllByRestaurantOwner(user, pageable);
+        } else {
+            // 사용자 권한이 USER일 경우
+            orderList = orderRepository.findAllByUser(user, pageable);
+        }
+
+        return orderList.map(OrderResponseDto::new);
+    }
+}

@@ -7,6 +7,7 @@ import com._NT.deliveryShop.domain.dto.OrderResponseDto;
 import com._NT.deliveryShop.security.UserDetailsImpl;
 import com._NT.deliveryShop.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,4 +37,14 @@ public class OrderController {
         return orderService.deleteOrder(orderId, userDetails.getUser());
     }
 
+    // 주문 전체 조회
+    @GetMapping
+    public Page<OrderResponseDto> getOrders(
+            @RequestParam("page") int page,
+            @RequestParam("size") int size,
+            @RequestParam("sort") String sortBy,
+            @RequestParam("isAsc") boolean isAsc,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return orderService.getAllOrders(page, size, sortBy, isAsc, userDetails.getUser());
+    }
 }
