@@ -1,6 +1,5 @@
 package com._NT.deliveryShop.service;
 
-import com._NT.deliveryShop.domain.dto.*;
 import com._NT.deliveryShop.domain.entity.*;
 import com._NT.deliveryShop.repository.DeliveryInfoRepository;
 import com._NT.deliveryShop.repository.OrderRepository;
@@ -17,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static com._NT.deliveryShop.domain.dto.OrderDto.*;
+
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -26,7 +27,7 @@ public class OrderService {
     private final DeliveryInfoRepository deliveryInfoRepository;
 
     @Transactional
-    public OrderCreateResponseDto createOrder(OrderCreateRequestDto orderRequestDto, User user) {
+    public CreateOrderResponse createOrder(CreateOrderRequest orderRequestDto, User user) {
         // 사용자 권한 가져와서 ADMIN, USER만 주문생성
         UserRoleEnum userRole = user.getRole();
 
@@ -65,7 +66,7 @@ public class OrderService {
 //            return new OrderCreateResponseDto(order);
 //        }
 
-        return new OrderCreateResponseDto(order);
+        return new CreateOrderResponse(order);
     }
 
     /**
@@ -75,13 +76,13 @@ public class OrderService {
      * @return OrderResponseDto : 주문 정보를 반환합니다.
      */
     @Transactional(readOnly = true)
-    public OrderResponseDto getOrder(UUID orderId, User user) {
+    public OrderResponse getOrder(UUID orderId, User user) {
         Order order = orderRepository.findById(orderId).orElseThrow(
                 () -> new NullPointerException("해당 주문이 존재하지 않습니다."));
 
         validateUserAccess(order, user);
 
-        return new OrderResponseDto(order);
+        return new OrderResponse(order);
     }
 
     /**
@@ -91,14 +92,14 @@ public class OrderService {
      * @return OrderDeleteResponseDto : 삭제된 주문 ID를 반환합니다.
      */
     @Transactional
-    public OrderDeleteResponseDto deleteOrder(UUID orderId, User user) {
+    public DeleteResponse deleteOrder(UUID orderId, User user) {
         Order order = orderRepository.findById(orderId).orElseThrow(
                 () -> new NullPointerException("해당 주문이 존재하지 않습니다."));
 
         validateUserAccess(order, user);
         orderRepository.deleteOrder(orderId, LocalDateTime.now(), user.getUserId());
 
-        return new OrderDeleteResponseDto(orderId);
+        return new DeleteResponse(orderId);
     }
 
 
@@ -112,7 +113,7 @@ public class OrderService {
      * @return : 주문 정보를 반환합니다.
      */
     @Transactional(readOnly = true)
-    public Page<OrderResponseDto> getAllOrders(int page, int size, String sortBy, boolean isAsc, User user) {
+    public Page<OrderResponse> getAllOrders(int page, int size, String sortBy, boolean isAsc, User user) {
         // 정렬 방향 설정
         Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
         // 정렬기준 sortBy, 정렬 방향isAsc로 정렬
@@ -135,7 +136,7 @@ public class OrderService {
             orderList = orderRepository.findAllByUser(user, pageable);
         }
 
-        return orderList.map(OrderResponseDto::new);
+        return orderList.map(OrderResponse::new);
     }
 
     /**
@@ -146,7 +147,7 @@ public class OrderService {
      * @return OrderResponseDto : 수정된 주문 정보를 반환합니다.
      */
     @Transactional
-    public OrderResponseDto modifyOrder(UUID orderId, OrderModifyRequestDto orderModifyRequestDto, User user) {
+    public OrderResponse modifyOrder(UUID orderId, ModifyRequest orderModifyRequestDto, User user) {
         Order order = orderRepository.findById(orderId).orElseThrow(
                 () -> new NullPointerException("해당 주문이 존재하지 않습니다."));
 
@@ -154,7 +155,7 @@ public class OrderService {
 
         order.setStatus(orderModifyRequestDto.getStatus());
 
-        return new OrderResponseDto(order);
+        return new OrderResponse(order);
     }
 
     // 접근 권한 확인

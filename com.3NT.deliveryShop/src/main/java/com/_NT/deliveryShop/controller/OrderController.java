@@ -1,6 +1,5 @@
 package com._NT.deliveryShop.controller;
 
-import com._NT.deliveryShop.domain.dto.*;
 import com._NT.deliveryShop.security.UserDetailsImpl;
 import com._NT.deliveryShop.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+import static com._NT.deliveryShop.domain.dto.OrderDto.*;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/orders")
@@ -18,27 +19,27 @@ public class OrderController {
 
     // 주문 등록
     @PostMapping
-    public OrderCreateResponseDto createOrder(@RequestBody OrderCreateRequestDto orderRequestDto,
-                                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public CreateOrderResponse createOrder(@RequestBody CreateOrderRequest orderRequestDto,
+                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return orderService.createOrder(orderRequestDto, userDetails.getUser());
     }
 
     // 주문 단건 조회
     @GetMapping("/{orderId}")
-    public OrderResponseDto getOrder(@PathVariable UUID orderId, UserDetailsImpl userDetails) {
+    public OrderResponse getOrder(@PathVariable UUID orderId, UserDetailsImpl userDetails) {
         return orderService.getOrder(orderId, userDetails.getUser());
     }
 
     // 주문 삭제
     @DeleteMapping("/{orderId}")
-    public OrderDeleteResponseDto deleteOrder(@PathVariable UUID orderId,
-                                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public DeleteResponse deleteOrder(@PathVariable UUID orderId,
+                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return orderService.deleteOrder(orderId, userDetails.getUser());
     }
 
     // 주문 전체 조회
     @GetMapping
-    public Page<OrderResponseDto> getOrders(
+    public Page<OrderResponse> getOrders(
             @RequestParam("page") int page,
             @RequestParam("size") int size,
             @RequestParam("sort") String sortBy,
@@ -49,8 +50,8 @@ public class OrderController {
 
     // 주문 수정
     @PatchMapping("/{orderId}")
-    public OrderResponseDto modifyOrder(@PathVariable UUID orderId,
-                                        @RequestBody OrderModifyRequestDto orderModifyRequestDto,
+    public OrderResponse modifyOrder(@PathVariable UUID orderId,
+                                        @RequestBody ModifyRequest orderModifyRequestDto,
                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return orderService.modifyOrder(orderId, orderModifyRequestDto, userDetails.getUser());
     }
