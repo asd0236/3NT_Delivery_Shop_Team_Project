@@ -1,9 +1,6 @@
 package com._NT.deliveryShop.controller;
 
-import com._NT.deliveryShop.domain.dto.OrderCreateRequestDto;
-import com._NT.deliveryShop.domain.dto.OrderCreateResponseDto;
-import com._NT.deliveryShop.domain.dto.OrderDeleteResponseDto;
-import com._NT.deliveryShop.domain.dto.OrderResponseDto;
+import com._NT.deliveryShop.domain.dto.*;
 import com._NT.deliveryShop.security.UserDetailsImpl;
 import com._NT.deliveryShop.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +18,8 @@ public class OrderController {
 
     // 주문 등록
     @PostMapping
-    public OrderCreateResponseDto createOrder(@RequestBody OrderCreateRequestDto orderRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public OrderCreateResponseDto createOrder(@RequestBody OrderCreateRequestDto orderRequestDto,
+                                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return orderService.createOrder(orderRequestDto, userDetails.getUser());
     }
 
@@ -33,7 +31,8 @@ public class OrderController {
 
     // 주문 삭제
     @DeleteMapping("/{orderId}")
-    public OrderDeleteResponseDto deleteOrder(@PathVariable UUID orderId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public OrderDeleteResponseDto deleteOrder(@PathVariable UUID orderId,
+                                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return orderService.deleteOrder(orderId, userDetails.getUser());
     }
 
@@ -47,4 +46,13 @@ public class OrderController {
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return orderService.getAllOrders(page, size, sortBy, isAsc, userDetails.getUser());
     }
+
+    // 주문 수정
+    @PatchMapping("/{orderId}")
+    public OrderResponseDto modifyOrder(@PathVariable UUID orderId,
+                                        @RequestBody OrderModifyRequestDto orderModifyRequestDto,
+                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return orderService.modifyOrder(orderId, orderModifyRequestDto, userDetails.getUser());
+    }
+
 }

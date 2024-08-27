@@ -1,9 +1,6 @@
 package com._NT.deliveryShop.service;
 
-import com._NT.deliveryShop.domain.dto.OrderCreateRequestDto;
-import com._NT.deliveryShop.domain.dto.OrderCreateResponseDto;
-import com._NT.deliveryShop.domain.dto.OrderDeleteResponseDto;
-import com._NT.deliveryShop.domain.dto.OrderResponseDto;
+import com._NT.deliveryShop.domain.dto.*;
 import com._NT.deliveryShop.domain.entity.*;
 import com._NT.deliveryShop.repository.DeliveryInfoRepository;
 import com._NT.deliveryShop.repository.OrderRepository;
@@ -93,6 +90,7 @@ public class OrderService {
      * @param user : 사용자 정보를 전달 받습니다.
      * @return OrderDeleteResponseDto : 삭제된 주문 ID를 반환합니다.
      */
+    @Transactional
     public OrderDeleteResponseDto deleteOrder(UUID orderId, User user) {
         Order order = orderRepository.findById(orderId).orElseThrow(
                 () -> new NullPointerException("해당 주문이 존재하지 않습니다."));
@@ -103,32 +101,9 @@ public class OrderService {
         return new OrderDeleteResponseDto(orderId);
     }
 
-    // 접근 권한 확인
-    private void validateUserAccess(Order order, User user) {
-        // 해당하는 가게 주인(OWNER)과 주문한 사용자(USER),관리자(ADMIN) 주문 조회 가능
-        UserRoleEnum userRole = user.getRole();
-
-        switch (userRole) {
-            case ADMIN:
-                // ADMIN일 경우 모든 주문 접근 가능
-                break;
-            case USER:
-                if (!order.getUser().getUserId().equals(user.getUserId())) {
-                    throw new IllegalArgumentException("해당 주문에 접근할 수 없습니다. 본인의 주문만 조회할 수 있습니다.");
-                }
-                break;
-            case OWNER:
-                if (!order.getRestaurant().getOwner().getUserId().equals(user.getUserId())) {
-                    throw new IllegalArgumentException("해당 주문에 접근할 수 없습니다. 본인의 가게 주문만 조회할 수 있습니다.");
-                }
-                break;
-            default:
-                throw new IllegalArgumentException("사용자 권한이 없습니다.");
-        }
-    }
 
     /**
-     * 주문 전체 조회를 수행합니다.
+     * 주문 전체 조회를 수행합니다. 주문 조회 시 사용자 권한에 따라 다른 주문 정보를 조회합니다.
      * @param page : 페이지 번호를 전달 받습니다.
      * @param size : 페이지 사이즈를 전달 받습니다.
      * @param sortBy : 정렬 기준을 전달 받습니다.(ex. createdAt)
@@ -161,5 +136,48 @@ public class OrderService {
         }
 
         return orderList.map(OrderResponseDto::new);
+    }
+
+    /**
+     * 주문 수정을 수행합니다. 주문 수정 시 주문 정보(Status)를 수정합니다.
+     * @param orderId : 주문 ID를 전달 받습니다.
+     * @param orderModifyRequestDto : 주문 수정 정보를 전달 받습니다.
+     * @param user : 사용자 정보를 전달 받습니다.
+     * @return OrderResponseDto : 수정된 주문 정보를 반환합니다.
+     */
+    @Transactional
+    public OrderResponseDto modifyOrder(UUID orderId, OrderModifyRequestDto orderModifyRequestDto, User user) {
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new NullPointerException("해당 주문이 존재하지 않습니다."));
+
+        validateUserAccess(order, user);
+
+        order.setStatus(orderModifyRequestDto.getStatus());
+
+        return new OrderResponseDto(order);
+    }
+
+    // 접근 권한 확인
+    private void validateUserAccess(Order order, User user) {
+        // 해당하는 가게 주인(OWNER)과 주문한 사용자(USER),관리자(ADMIN) 주문 조회 가능
+        UserRoleEnum userRole = user.getRole();
+
+        switch (userRole) {
+            case ADMIN:
+                // ADMIN일 경우 모든 주문 접근 가능
+                break;
+            case USER:
+                if (!order.getUser().getUserId().equals(user.getUserId())) {
+                    throw new IllegalArgumentException("해당 주문에 접근할 수 없습니다. 본인의 주문만 조회할 수 있습니다.");
+                }
+                break;
+            case OWNER:
+                if (!order.getRestaurant().getOwner().getUserId().equals(user.getUserId())) {
+                    throw new IllegalArgumentException("해당 주문에 접근할 수 없습니다. 본인의 가게 주문만 조회할 수 있습니다.");
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("사용자 권한이 없습니다.");
+        }
     }
 }
