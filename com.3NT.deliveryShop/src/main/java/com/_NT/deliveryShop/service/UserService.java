@@ -15,13 +15,11 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
-
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 @Slf4j
@@ -71,7 +69,14 @@ public class UserService {
             throw new AccessDeniedException("접근 권한이 없습니다.");
         }
 
-        return UserDto.Result.of(repoHelper.findUserOrThrow404(userId));
+        User targetUser = repoHelper.findUserOrThrow404(userId);
+
+        // 삭제된 사용자에 대한 접근을 방지
+        if (targetUser.getIsDeleted()) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
+
+        return UserDto.Result.of(targetUser);
 
     }
 
@@ -82,7 +87,7 @@ public class UserService {
         Sort sort = Sort.by(direction, sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<User> userList = userRepository.findAll(pageable);
+        Page<User> userList = userRepository.findAllByIsDeletedFalse(pageable);
 
         return userList.map(UserDto.GetAllUsersResponse::new).stream().toList(); // 반환 형 변환
 
@@ -104,6 +109,11 @@ public class UserService {
         }
 
         User savedUser = userRepository.findById(userId).orElse(null);
+
+        // 삭제된 사용자에 대한 접근 방지
+        if (savedUser != null && savedUser.getIsDeleted()) {
+            throw new AccessDeniedException("수정 권한이 없습니다.");
+        }
 
         Objects.requireNonNull(savedUser).modifyUser(
                 userDto.getUsername(),
@@ -129,7 +139,7 @@ public class UserService {
             throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
         }
 
-        userRepository.deleteById(userId);
+        userRepository.deleteById(userId, LocalDateTime.now(), user.getUserId());
 
         return UserDto.DeleteUserResult.builder()
                 .userId(userId)
