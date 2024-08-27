@@ -1,9 +1,7 @@
 package com._NT.deliveryShop.service;
 
 import com._NT.deliveryShop.domain.entity.*;
-import com._NT.deliveryShop.repository.DeliveryInfoRepository;
 import com._NT.deliveryShop.repository.OrderRepository;
-import com._NT.deliveryShop.repository.PaymentRepository;
 import com._NT.deliveryShop.repository.RestaurantReposiotry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,8 +21,6 @@ import static com._NT.deliveryShop.domain.dto.OrderDto.*;
 public class OrderService {
     private final OrderRepository orderRepository;
     private final RestaurantReposiotry restaurantRepository;
-    private final PaymentRepository paymentRepository;
-    private final DeliveryInfoRepository deliveryInfoRepository;
 
     @Transactional
     public CreateOrderResponse createOrder(CreateOrderRequest orderRequestDto, User user) {
@@ -40,8 +36,7 @@ public class OrderService {
                 () -> new NullPointerException("해당 음식점이 존재하지 않습니다."));
 
         // 배송지 정보 조회
-        DeliveryInfo deliveryInfo = deliveryInfoRepository.findById(orderRequestDto.getDeliveryInfoId()).orElseThrow(
-                () -> new NullPointerException("해당 배송지 정보가 존재하지 않습니다."));
+        DeliveryInfo deliveryInfo = new DeliveryInfo();
 
         // 상품 정보 조회
 
