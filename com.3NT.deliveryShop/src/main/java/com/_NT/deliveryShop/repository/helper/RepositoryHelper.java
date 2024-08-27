@@ -1,6 +1,7 @@
 package com._NT.deliveryShop.repository.helper;
 
 import com._NT.deliveryShop.domain.entity.Category;
+import com._NT.deliveryShop.domain.entity.Restaurant;
 import com._NT.deliveryShop.domain.entity.User;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Component;
@@ -22,7 +23,12 @@ public record RepositoryHelper(EntityManager em, ServiceErrorHelper errorHelper)
         return findOrThrow404(Category.class, id);
     }
 
-    public User findUserOrThrow404(Long userId) throws ResponseStatusException {
-        return findOrThrow404(User.class, userId);
+    public Restaurant findRestaurantOrThrow(Long id) throws ResponseStatusException {
+        return findOrThrow404(Restaurant.class, id);
+    }
+
+    public User findUserOrThrow404(Long id) throws ResponseStatusException {
+        return findOrThrow404(User.class, id);
+
     }
 }

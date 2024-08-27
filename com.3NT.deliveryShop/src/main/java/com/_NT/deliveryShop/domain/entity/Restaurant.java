@@ -1,18 +1,34 @@
 package com._NT.deliveryShop.domain.entity;
 
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import java.time.LocalTime;
+import java.util.UUID;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.With;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
+@With
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Getter
-@NoArgsConstructor
 @Table(name = "p_restaurant")
+@Builder
+@Getter
+@Setter
 public class Restaurant extends Timestamped {
     @Id
     @GeneratedValue(generator = "UUID")
@@ -20,7 +36,7 @@ public class Restaurant extends Timestamped {
     @Column(name = "restaurant_id", updatable = false, nullable = false)
     private UUID restaurantId;
 
-    // Catgeory와 일대일 관계
+    // Category와 일대일 관계
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
@@ -29,8 +45,8 @@ public class Restaurant extends Timestamped {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
 
     @Column(name = "mobile_number", nullable = false)
     private String mobileNumber;
@@ -39,11 +55,13 @@ public class Restaurant extends Timestamped {
     private String address;
 
     @Column(name = "business_start_hours", nullable = false)
-    private LocalDateTime businessStartHours;
+    private LocalTime businessStartHours;
 
     @Column(name = "business_end_hours", nullable = false)
-    private LocalDateTime businessEndHours;
+    private LocalTime businessEndHours;
 
     @Column(name = "image_url", nullable = false)
     private String imageURL;
 }
+
+

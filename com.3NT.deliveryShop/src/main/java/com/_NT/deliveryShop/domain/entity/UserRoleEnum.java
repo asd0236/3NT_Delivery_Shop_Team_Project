@@ -20,4 +20,11 @@ public enum UserRoleEnum {
         public static final String OWNER = "ROLE_OWNER";
         public static final String ADMIN = "ROLE_ADMIN";
     }
+
+    public static class PreAuthorizeRole {
+
+        public static final String ADMIN = "T(com._NT.deliveryShop.domain.entity.UserRoleEnum).ADMIN.name()";
+        public static final String OWNER = "T(com._NT.deliveryShop.domain.entity.UserRoleEnum).OWNER.name()";
+        public static final String USER = "T(com._NT.deliveryShop.domain.entity.UserRoleEnum).OWNER.name()";
+    }
 }
