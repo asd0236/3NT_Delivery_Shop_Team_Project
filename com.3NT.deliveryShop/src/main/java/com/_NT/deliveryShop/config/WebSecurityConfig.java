@@ -1,5 +1,6 @@
 package com._NT.deliveryShop.config;
 
+import com._NT.deliveryShop.repository.UserRepository;
 import com._NT.deliveryShop.security.JwtAuthenticationFilter;
 import com._NT.deliveryShop.security.JwtAuthorizationFilter;
 import com._NT.deliveryShop.security.UserDetailsServiceImpl;
@@ -31,6 +32,7 @@ public class WebSecurityConfig {
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final UserRepository userRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -44,7 +46,7 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil);
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil, userRepository);
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return filter;
     }
