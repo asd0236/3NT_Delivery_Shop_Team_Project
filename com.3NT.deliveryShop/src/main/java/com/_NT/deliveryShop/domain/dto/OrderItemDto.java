@@ -13,9 +13,9 @@ public class OrderItemDto {
     // 해당 상품의 총 가격
     private int totalPrice;
 
-    public OrderItemDto(OrderProduct orderItem) {
-        this.name = orderItem.getProduct().getName();
-        this.quantity = orderItem.getQuantity();
-        this.totalPrice = orderItem.getProduct().getPrice() * orderItem.getQuantity();
+    public OrderItemDto(OrderProduct orderProduct) {
+        this.name = orderProduct.getProduct().getName();
+        this.quantity = orderProduct.getQuantity();
+        this.totalPrice = orderProduct.getProduct().getPrice() * orderProduct.getQuantity();
     }
 }

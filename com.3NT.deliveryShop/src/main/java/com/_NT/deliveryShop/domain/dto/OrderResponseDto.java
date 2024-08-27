@@ -32,8 +32,8 @@ public class OrderResponseDto {
         this.isOnline = order.getIsOnline();
         this.deliveryInfo = new DeliveryInfoDto(order.getDeliveryInfo());
         this.paymentInfoDto = new PaymentInfoDto(order.getPayment());
-        for (OrderProduct orderItem : order.getOrderProducts()) {
-            orderItems.add(new OrderItemDto(orderItem));
+        for (OrderProduct orderProduct : order.getOrderProducts()) {
+            orderItems.add(new OrderItemDto(orderProduct));
         }
         // orderItems 에서 totalPrice 계산하기
         this.totalPrice = orderItems.stream()
