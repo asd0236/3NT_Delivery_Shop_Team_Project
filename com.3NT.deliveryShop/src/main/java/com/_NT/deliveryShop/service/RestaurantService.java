@@ -105,8 +105,8 @@ public class RestaurantService {
         Restaurant restaurant = repoHelper.findRestaurantOrThrow(id);
         restaurantAuthorizer.requireRestaurantOwner(authentication, restaurant);
 
-        restaurant.setIsDeleted(true);
-        restaurant.setDeletedBy(id);
+//        restaurant.setIsDeleted(true);
+//        restaurant.setDeletedBy(id);
 
         return Result.Deleted.of(restaurantRepository.save(restaurant));
     }
