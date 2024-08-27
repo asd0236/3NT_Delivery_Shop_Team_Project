@@ -2,6 +2,7 @@ package com._NT.deliveryShop.service;
 
 import com._NT.deliveryShop.domain.dto.OrderCreateRequestDto;
 import com._NT.deliveryShop.domain.dto.OrderCreateResponseDto;
+import com._NT.deliveryShop.domain.dto.OrderResponseDto;
 import com._NT.deliveryShop.domain.entity.*;
 import com._NT.deliveryShop.repository.DeliveryInfoRepository;
 import com._NT.deliveryShop.repository.OrderRepository;
@@ -10,6 +11,8 @@ import com._NT.deliveryShop.repository.RestaurantReposiotry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -57,6 +60,46 @@ public class OrderService {
 //        }
 
         return new OrderCreateResponseDto(order);
+    }
+
+    /**
+     * 주문에 대한 단건 조회를 수행합니다.
+     * @param orderId : 주문 ID를 전달 받습니다.
+     * @param user : 사용자 정보를 전달 받습니다.
+     * @return OrderResponseDto : 주문 정보를 반환합니다.
+     */
+    @Transactional(readOnly = true)
+    public OrderResponseDto getOrder(UUID orderId, User user) {
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new NullPointerException("해당 주문이 존재하지 않습니다."));
+
+        validateUserAccess(order, user);
+
+        return new OrderResponseDto(order);
+    }
+
+    // 접근 권한 확인
+    private void validateUserAccess(Order order, User user) {
+        // 해당하는 가게 주인(OWNER)과 주문한 사용자(USER),관리자(ADMIN) 주문 조회 가능
+        UserRoleEnum userRole = user.getRole();
+
+        switch (userRole) {
+            case ADMIN:
+                // ADMIN일 경우 모든 주문 접근 가능
+                break;
+            case USER:
+                if (!order.getUser().getUserId().equals(user.getUserId())) {
+                    throw new IllegalArgumentException("해당 주문에 접근할 수 없습니다. 본인의 주문만 조회할 수 있습니다.");
+                }
+                break;
+            case OWNER:
+                if (!order.getRestaurant().getOwner().getUserId().equals(user.getUserId())) {
+                    throw new IllegalArgumentException("해당 주문에 접근할 수 없습니다. 본인의 가게 주문만 조회할 수 있습니다.");
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("사용자 권한이 없습니다.");
+        }
     }
 
 }

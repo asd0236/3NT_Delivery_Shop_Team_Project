@@ -34,4 +34,13 @@ public class Payment extends Timestamped {
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_method", nullable = false)
     private PaymentMethod paymentMethod;
+
+    // 연관관계 편의 메서드
+    public void setOrder(Order order) {
+        this.order = order;
+
+        if (order.getPayment() != this) {
+            order.setPayment(this);
+        }
+    }
 }
