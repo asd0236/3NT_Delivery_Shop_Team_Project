@@ -24,7 +24,7 @@ public record RepositoryHelper(EntityManager em, ServiceErrorHelper errorHelper)
         return findOrThrow404(Category.class, id);
     }
 
-    public Restaurant findRestaurantOrThrow(Long id) throws ResponseStatusException {
+    public Restaurant findRestaurantOrThrow(UUID id) throws ResponseStatusException {
         return findOrThrow404(Restaurant.class, id);
     }
 

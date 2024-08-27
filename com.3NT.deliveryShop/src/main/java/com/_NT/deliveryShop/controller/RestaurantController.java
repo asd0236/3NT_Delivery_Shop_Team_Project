@@ -7,11 +7,11 @@ import static com._NT.deliveryShop.domain.dto.RestaurantDto.Update;
 import com._NT.deliveryShop.repository.searchcondition.RestaurantSearchCondition;
 import com._NT.deliveryShop.service.RestaurantService;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/restaurants")
@@ -39,7 +38,7 @@ public class RestaurantController {
     }
 
     @GetMapping("/{restaurantId}")
-    public Result getRestaurant(@PathVariable Long restaurantId) {
+    public Result getRestaurant(@PathVariable UUID restaurantId) {
         return service.readRestaurant(restaurantId);
     }
 
@@ -66,14 +65,14 @@ public class RestaurantController {
     }
 
     @PatchMapping("/{restaurantId}")
-    public Result patchRestaurant(@PathVariable Long restaurantId,
+    public Result patchRestaurant(@PathVariable UUID restaurantId,
         @RequestBody Update dto, Authentication authentication) {
         return service.updateRestaurant(restaurantId, dto, authentication);
     }
 
     @DeleteMapping("/{restaurantId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Result.Deleted deleteRestaurant(@PathVariable Long restaurantId,
+    public Result.Deleted deleteRestaurant(@PathVariable UUID restaurantId,
         Authentication authentication) {
         return service.deleteRestaurant(restaurantId, authentication);
     }
