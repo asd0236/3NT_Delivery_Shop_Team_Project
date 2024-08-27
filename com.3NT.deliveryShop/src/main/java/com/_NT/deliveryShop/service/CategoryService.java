@@ -20,10 +20,10 @@ public class CategoryService {
     private final RepositoryHelper repoHelper;
 
     @Transactional
-    public Result createCategory(Create dto) {
+    public Category createCategory(Create dto) {
         Category category = dto.asEntity();
 
-        return Result.of(categoryRepository.save(category));
+        return categoryRepository.save(category);
     }
 
     public Result readCategory(Long id) {
