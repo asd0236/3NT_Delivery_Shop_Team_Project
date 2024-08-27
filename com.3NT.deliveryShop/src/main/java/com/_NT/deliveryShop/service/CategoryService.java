@@ -7,6 +7,7 @@ import static com._NT.deliveryShop.domain.dto.CategoryDto.Result;
 import com._NT.deliveryShop.domain.entity.Category;
 import com._NT.deliveryShop.repository.CategoryRepository;
 import com._NT.deliveryShop.repository.helper.RepositoryHelper;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,12 +27,12 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    public Result readCategory(Long id) {
+    public Result readCategory(UUID id) {
         return Result.of(repoHelper.findCategoryOrThrow404(id));
     }
 
     @Transactional
-    public Result putCategory(Long id, Put dto) {
+    public Result putCategory(UUID id, Put dto) {
         Category category = repoHelper.findCategoryOrThrow404(id);
 
         if (dto != null) {
