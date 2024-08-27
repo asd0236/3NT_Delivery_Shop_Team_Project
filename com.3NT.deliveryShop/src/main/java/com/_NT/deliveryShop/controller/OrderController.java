@@ -4,7 +4,7 @@ import com._NT.deliveryShop.domain.dto.OrderCreateRequestDto;
 import com._NT.deliveryShop.domain.dto.OrderCreateResponseDto;
 import com._NT.deliveryShop.domain.dto.OrderDeleteResponseDto;
 import com._NT.deliveryShop.domain.dto.OrderResponseDto;
-import com._NT.deliveryShop.domain.entity.User;
+import com._NT.deliveryShop.security.UserDetailsImpl;
 import com._NT.deliveryShop.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,20 +20,20 @@ public class OrderController {
 
     // 주문 등록
     @PostMapping
-    public OrderCreateResponseDto createOrder(@RequestBody OrderCreateRequestDto orderRequestDto, @AuthenticationPrincipal User user) {
-        return orderService.createOrder(orderRequestDto, user);
+    public OrderCreateResponseDto createOrder(@RequestBody OrderCreateRequestDto orderRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return orderService.createOrder(orderRequestDto, userDetails.getUser());
     }
 
     // 주문 단건 조회
     @GetMapping("/{orderId}")
-    public OrderResponseDto getOrder(@PathVariable UUID orderId, @AuthenticationPrincipal User user) {
-        return orderService.getOrder(orderId, user);
+    public OrderResponseDto getOrder(@PathVariable UUID orderId, UserDetailsImpl userDetails) {
+        return orderService.getOrder(orderId, userDetails.getUser());
     }
 
     // 주문 삭제
     @DeleteMapping("/{orderId}")
-    public OrderDeleteResponseDto deleteOrder(@PathVariable UUID orderId, @AuthenticationPrincipal User user) {
-        return orderService.deleteOrder(orderId, user);
+    public OrderDeleteResponseDto deleteOrder(@PathVariable UUID orderId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return orderService.deleteOrder(orderId, userDetails.getUser());
     }
 
 }
