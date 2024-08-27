@@ -21,10 +21,14 @@ import lombok.Setter;
 import lombok.With;
 import org.hibernate.annotations.GenericGenerator;
 
+@With
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Getter
-@NoArgsConstructor
 @Table(name = "p_restaurant")
+@Builder
+@Getter
+@Setter
 public class Restaurant extends Timestamped {
     @Id
     @GeneratedValue(generator = "UUID")
@@ -59,3 +63,5 @@ public class Restaurant extends Timestamped {
     @Column(name = "image_url", nullable = false)
     private String imageURL;
 }
+
+
