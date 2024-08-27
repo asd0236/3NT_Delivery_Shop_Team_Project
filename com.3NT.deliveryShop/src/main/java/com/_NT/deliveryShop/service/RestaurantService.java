@@ -36,7 +36,7 @@ public class RestaurantService {
     private final RestaurantRepositoryImpl restaurantRepositoryImpl;
 
 
-    @PreAuthorize("hasAnyRole(" + ADMIN + OWNER + ")")
+    @PreAuthorize("hasAnyRole(" + ADMIN + "," + OWNER + ")")
     @Transactional
     public Result createRestaurant(Create dto, Authentication authentication) {
         User owner = repoHelper.findUserOrThrow404(dto.getOwnerId());
@@ -48,6 +48,7 @@ public class RestaurantService {
         Category category = categoryService.createCategory(categoryDto);
 
         Restaurant restaurant = dto.asEntity(it -> it
+            .withOwner(owner)
             .withCategory(category));
 
         return Result.of(restaurantRepository.save(restaurant));
