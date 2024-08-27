@@ -1,7 +1,9 @@
 package com._NT.deliveryShop.security;
 
 import com._NT.deliveryShop.domain.dto.UserDto;
+import com._NT.deliveryShop.domain.entity.User;
 import com._NT.deliveryShop.domain.entity.UserRoleEnum;
+import com._NT.deliveryShop.repository.UserRepository;
 import com._NT.deliveryShop.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -20,9 +22,11 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
 
+    private final UserRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
+        this.userRepository = userRepository;
         setFilterProcessesUrl("/api/v1/users/login");
     }
 
@@ -31,9 +35,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         try {
             UserDto.Login requestDto = new ObjectMapper().readValue(request.getInputStream(), UserDto.Login.class);
 
+            User user = userRepository.findByUsername(requestDto.getUsername()).orElse(null);
+            if (user == null) {
+                throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
+            }
+            Long userId = user.getUserId();
+
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            requestDto.getUsername(),
+                            userId,
                             requestDto.getPassword(),
                             null
                     )
@@ -46,10 +56,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
-        String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
+        String userId = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
         UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
 
-        String token = jwtUtil.createToken(username, role);
+        String token = jwtUtil.createToken(userId, role);
 
         // JSON 형태로 응답 작성
         response.setContentType("application/json");

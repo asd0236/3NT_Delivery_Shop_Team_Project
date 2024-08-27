@@ -4,6 +4,7 @@ import com._NT.deliveryShop.domain.dto.UserDto;
 import com._NT.deliveryShop.domain.entity.User;
 import com._NT.deliveryShop.domain.entity.UserRoleEnum;
 import com._NT.deliveryShop.repository.UserRepository;
+import com._NT.deliveryShop.repository.helper.RepositoryHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -14,10 +15,13 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 @Slf4j
@@ -25,11 +29,13 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final RepositoryHelper repoHelper;
+
     private final PasswordEncoder passwordEncoder;
 
 
     @Transactional
-    public UserDto.Response createUser(UserDto.Create userDto) {
+    public UserDto.Result createUser(UserDto.Create userDto) {
 
         log.info(userDto.toString());
 
@@ -54,35 +60,23 @@ public class UserService {
         UserRoleEnum role = userDto.getRole();
 
         User user = new User(username, password, email, mobileNumber, role);
-        userRepository.save(user);
-
-        return UserDto.Response.builder()
-                .username(username)
-                .email(email)
-                .mobileNumber(mobileNumber)
-                .role(role)
-                .build();
+        return UserDto.Result.of(userRepository.save(user));
     }
 
     @Transactional(readOnly = true)
-    public UserDto.Response getUser(Long userId, User user) {
+    public UserDto.Result getUser(Long userId, User user) {
 
         // 관리자가 아닐 경우 타인의 정보 조회 시 403 에러 반환
         if(user.getRole() != UserRoleEnum.ADMIN && !Objects.equals(user.getUserId(), userId)) {
             throw new AccessDeniedException("접근 권한이 없습니다.");
         }
 
-        return UserDto.Response.builder()
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .mobileNumber(user.getMobileNumber())
-                .role(user.getRole())
-                .build();
+        return UserDto.Result.of(repoHelper.findUserOrThrow404(userId));
 
     }
 
     @Transactional(readOnly = true)
-    public Collection<UserDto.GetAllUsersResponse> getAllUsers(User user, int page, int size, String sortBy) {
+    public Collection<UserDto.GetAllUsersResponse> getAllUsers(int page, int size, String sortBy) {
 
         Sort.Direction direction = Sort.Direction.ASC;
         Sort sort = Sort.by(direction, sortBy);
@@ -95,7 +89,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserDto.ModifyUserResponse modifyUser(Long userId, UserDto.Modify userDto, User user) {
+    public UserDto.ModifyUserResult modifyUser(Long userId, UserDto.Modify userDto, User user) {
 
         // 관리자가 아닐 경우 타인의 정보 수정 시도 시 403 에러 반환
         if(user.getRole() != UserRoleEnum.ADMIN && !Objects.equals(user.getUserId(), userId)) {
@@ -119,20 +113,12 @@ public class UserService {
                 userDto.getRole()
         );
 
-        userRepository.save(savedUser);
-
-        return UserDto.ModifyUserResponse.builder()
-                .userId(savedUser.getUserId())
-                .username(savedUser.getUsername())
-                .email(savedUser.getEmail())
-                .mobileNumber(savedUser.getMobileNumber())
-                .role(savedUser.getRole())
-                .build();
+        return UserDto.ModifyUserResult.of(userRepository.save(savedUser));
 
     }
 
     @Transactional
-    public Long deleteUser(Long userId, User user) {
+    public UserDto.DeleteUserResult deleteUser(Long userId, User user) {
 
         // 관리자가 아닐 경우 타인의 정보 삭제 시도 시 403 에러 반환
         if(user.getRole() != UserRoleEnum.ADMIN && !Objects.equals(user.getUserId(), userId)) {
@@ -145,6 +131,8 @@ public class UserService {
 
         userRepository.deleteById(userId);
 
-        return userId;
+        return UserDto.DeleteUserResult.builder()
+                .userId(userId)
+                .build();
     }
 }

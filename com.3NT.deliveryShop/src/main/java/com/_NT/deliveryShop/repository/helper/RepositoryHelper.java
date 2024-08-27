@@ -29,5 +29,6 @@ public record RepositoryHelper(EntityManager em, ServiceErrorHelper errorHelper)
 
     public User findUserOrThrow404(Long id) throws ResponseStatusException {
         return findOrThrow404(User.class, id);
+
     }
 }
