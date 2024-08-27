@@ -53,5 +53,14 @@ public class Order extends Timestamped {
         this.deliveryInfo = deliveryInfo;
         this.status = status;
         this.isOnline = isOnline;
+        // 연관관계 설정
+        if (payment != null) setPayment(payment);
+    }
+
+    public void setPayment(Payment payment) {
+        this.payment = payment;
+        if (payment.getOrder() != this) {
+            payment.setOrder(this);
+        }
     }
 }
