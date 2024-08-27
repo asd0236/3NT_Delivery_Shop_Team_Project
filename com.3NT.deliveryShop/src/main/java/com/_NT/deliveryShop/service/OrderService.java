@@ -2,6 +2,7 @@ package com._NT.deliveryShop.service;
 
 import com._NT.deliveryShop.domain.dto.OrderCreateRequestDto;
 import com._NT.deliveryShop.domain.dto.OrderCreateResponseDto;
+import com._NT.deliveryShop.domain.dto.OrderDeleteResponseDto;
 import com._NT.deliveryShop.domain.dto.OrderResponseDto;
 import com._NT.deliveryShop.domain.entity.*;
 import com._NT.deliveryShop.repository.DeliveryInfoRepository;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -19,6 +21,7 @@ import java.util.UUID;
 public class OrderService {
     private final OrderRepository orderRepository;
     private final RestaurantReposiotry restaurantRepository;
+    private final PaymentRepository paymentRepository;
     private final DeliveryInfoRepository deliveryInfoRepository;
 
     @Transactional
@@ -76,6 +79,22 @@ public class OrderService {
         validateUserAccess(order, user);
 
         return new OrderResponseDto(order);
+    }
+
+    /**
+     * 주문 삭제를 수행합니다. 주문 삭제 시 소프트 삭제로 처리합니다.
+     * @param orderId : 주문 ID를 전달 받습니다.
+     * @param user : 사용자 정보를 전달 받습니다.
+     * @return OrderDeleteResponseDto : 삭제된 주문 ID를 반환합니다.
+     */
+    public OrderDeleteResponseDto deleteOrder(UUID orderId, User user) {
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new NullPointerException("해당 주문이 존재하지 않습니다."));
+
+        validateUserAccess(order, user);
+        orderRepository.deleteOrder(orderId, LocalDateTime.now(), user.getUserId());
+
+        return new OrderDeleteResponseDto(orderId);
     }
 
     // 접근 권한 확인

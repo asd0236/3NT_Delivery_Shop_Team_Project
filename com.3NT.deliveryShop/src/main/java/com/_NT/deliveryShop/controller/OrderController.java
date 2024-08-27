@@ -30,4 +30,10 @@ public class OrderController {
         return orderService.getOrder(orderId, user);
     }
 
+    // 주문 삭제
+    @DeleteMapping("/{orderId}")
+    public OrderDeleteResponseDto deleteOrder(@PathVariable UUID orderId, @AuthenticationPrincipal User user) {
+        return orderService.deleteOrder(orderId, user);
+    }
+
 }
