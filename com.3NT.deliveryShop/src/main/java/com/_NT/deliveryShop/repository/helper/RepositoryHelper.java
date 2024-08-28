@@ -4,6 +4,7 @@ import com._NT.deliveryShop.domain.entity.Category;
 import com._NT.deliveryShop.domain.entity.Restaurant;
 import com._NT.deliveryShop.domain.entity.User;
 import jakarta.persistence.EntityManager;
+import java.util.UUID;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -19,11 +20,11 @@ public record RepositoryHelper(EntityManager em, ServiceErrorHelper errorHelper)
         return entity;
     }
 
-    public Category findCategoryOrThrow404(Long id) throws ResponseStatusException {
+    public Category findCategoryOrThrow404(UUID id) throws ResponseStatusException {
         return findOrThrow404(Category.class, id);
     }
 
-    public Restaurant findRestaurantOrThrow(Long id) throws ResponseStatusException {
+    public Restaurant findRestaurantOrThrow(UUID id) throws ResponseStatusException {
         return findOrThrow404(Restaurant.class, id);
     }
 

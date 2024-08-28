@@ -16,6 +16,7 @@ import com._NT.deliveryShop.repository.implementaion.RestaurantRepositoryImpl;
 import com._NT.deliveryShop.repository.searchcondition.RestaurantSearchCondition;
 import com._NT.deliveryShop.service.authorizer.RestaurantAuthorizer;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -54,7 +55,7 @@ public class RestaurantService {
         return Result.of(restaurantRepository.save(restaurant));
     }
 
-    public Result readRestaurant(Long id) {
+    public Result readRestaurant(UUID id) {
         return Result.of(repoHelper.findRestaurantOrThrow(id));
     }
 
@@ -69,7 +70,7 @@ public class RestaurantService {
 
     @PreAuthorize("hasAnyRole(" + ADMIN + OWNER + ")")
     @Transactional
-    public Result updateRestaurant(Long id, Update dto, Authentication authentication) {
+    public Result updateRestaurant(UUID id, Update dto, Authentication authentication) {
         Restaurant restaurant = repoHelper.findRestaurantOrThrow(id);
         restaurantAuthorizer.requireRestaurantOwner(authentication, restaurant);
 
@@ -100,12 +101,12 @@ public class RestaurantService {
 
     @PreAuthorize("hasRole(" + ADMIN + ")")
     @Transactional
-    public Result.Deleted deleteRestaurant(Long id, Authentication authentication) {
+    public Result.Deleted deleteRestaurant(UUID id, Authentication authentication) {
         Restaurant restaurant = repoHelper.findRestaurantOrThrow(id);
         restaurantAuthorizer.requireRestaurantOwner(authentication, restaurant);
 
-        restaurant.setIsDeleted(true);
-        restaurant.setDeletedBy(id);
+//        restaurant.setIsDeleted(true);
+//        restaurant.setDeletedBy(id);
 
         return Result.Deleted.of(restaurantRepository.save(restaurant));
     }
