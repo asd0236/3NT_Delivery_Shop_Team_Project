@@ -22,6 +22,7 @@ public interface ProductDto {
         private final String description;
         private final Integer price;
         private final String imageURL;
+        private final Boolean isActivated;
 
         public Product asEntity(
             Function<? super Product, ? extends Product> initialize) {
@@ -30,6 +31,7 @@ public interface ProductDto {
                 .description(description)
                 .price(price)
                 .imageURL(imageURL)
+                .isActivated(isActivated)
                 .build());
         }
     }
@@ -59,6 +61,15 @@ public interface ProductDto {
     @With
     @Data
     @Builder
+    class Patch {
+
+        private final UUID restaurantId;
+        private final Boolean isActivated;
+    }
+
+    @With
+    @Data
+    @Builder
     class Result {
 
         private final UUID productId;
@@ -67,6 +78,7 @@ public interface ProductDto {
         private final String description;
         private final Integer price;
         private final String imageURL;
+        private final Boolean isActivated;
 
         public static Result of(Product product) {
             return Result.builder()

@@ -1,6 +1,7 @@
 package com._NT.deliveryShop.service;
 
 import static com._NT.deliveryShop.domain.dto.ProductDto.Create;
+import static com._NT.deliveryShop.domain.dto.ProductDto.Patch;
 import static com._NT.deliveryShop.domain.dto.ProductDto.Put;
 import static com._NT.deliveryShop.domain.dto.ProductDto.Result;
 
@@ -54,6 +55,14 @@ public class ProductService {
     public List<Result> searchProducts(ProductSearchCondition condition, Pageable pageable) {
 
         return Result.of(productRepositoryImpl.search(condition, pageable));
+    }
+
+    @Transactional
+    public Result patchActivationProduct(UUID productId, Patch dto) {
+
+        Product product = repoHelper.findProductOrThrow404(productId);
+        product.setIsActivated(dto.getIsActivated());
+        return Result.of(productRepository.save(product));
     }
 
     @Transactional

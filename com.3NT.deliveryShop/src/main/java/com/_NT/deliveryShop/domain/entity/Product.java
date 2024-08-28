@@ -22,6 +22,7 @@ import org.hibernate.annotations.GenericGenerator;
 @With
 @Entity
 @Table(name = "p_product")
+@Setter
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -49,13 +50,17 @@ public class Product extends Timestamped {
     @Column(name = "image_url", nullable = false)
     private String imageURL;
 
+    @Column(name = "isActivated", nullable = false)
+    private Boolean isActivated;
+
     @Builder
     public Product(Restaurant restaurant, String name, String description, Integer price,
-        String imageURL) {
+        String imageURL, Boolean isActivated) {
         this.restaurant = restaurant;
         this.name = name;
         this.description = description;
         this.price = price;
         this.imageURL = imageURL;
+        this.isActivated = isActivated;
     }
 }
