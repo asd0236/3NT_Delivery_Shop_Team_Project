@@ -56,7 +56,7 @@ public class RestaurantService {
     }
 
     public Result readRestaurant(UUID id) {
-        return Result.of(repoHelper.findRestaurantOrThrow(id));
+        return Result.of(repoHelper.findRestaurantOrThrow404(id));
     }
 
     public List<Result> readRestaurants(Pageable pageable) {
@@ -71,7 +71,7 @@ public class RestaurantService {
     @PreAuthorize("hasAnyRole(" + ADMIN + OWNER + ")")
     @Transactional
     public Result updateRestaurant(UUID id, Update dto, Authentication authentication) {
-        Restaurant restaurant = repoHelper.findRestaurantOrThrow(id);
+        Restaurant restaurant = repoHelper.findRestaurantOrThrow404(id);
         restaurantAuthorizer.requireRestaurantOwner(authentication, restaurant);
 
         if (dto.getName() != null) {
@@ -102,7 +102,8 @@ public class RestaurantService {
     @PreAuthorize("hasRole(" + ADMIN + ")")
     @Transactional
     public Result.Deleted deleteRestaurant(UUID id, Authentication authentication) {
-        Restaurant restaurant = repoHelper.findRestaurantOrThrow(id);
+
+        Restaurant restaurant = repoHelper.findRestaurantOrThrow404(id);
         restaurantAuthorizer.requireRestaurantOwner(authentication, restaurant);
 
 //        restaurant.setIsDeleted(true);
