@@ -11,7 +11,7 @@ public interface UserDto {
     @Data
     @NoArgsConstructor
     final class Login {
-        private  String username;
+        private String username;
         private String password;
     }
 
