@@ -33,7 +33,7 @@ public class AiChat extends Timestamped {
 
     private boolean isUserChat; // true 일 경우 유저의 채팅, false 일 경우 ai의 채팅
 
-    @Column(name = "chat_id", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
     @Column(name = "chat_time", nullable = false)
