@@ -34,6 +34,7 @@ public class Payment extends Timestamped {
     @Column(name = "payment_method", nullable = false)
     private PaymentMethod paymentMethod;
 
+
     public Payment(Order order, int amount, LocalDateTime now, PaymentMethod paymentMethod) {
         this.order = order;
         this.amount = amount;
@@ -43,5 +44,15 @@ public class Payment extends Timestamped {
 
     public void modifyPayment(int amount) {
         this.amount = amount;
+    }
+  
+    // 연관관계 편의 메서드
+    public void setOrder(Order order) {
+        this.order = order;
+
+        if (order.getPayment() != this) {
+            order.setPayment(this);
+        }
+
     }
 }
