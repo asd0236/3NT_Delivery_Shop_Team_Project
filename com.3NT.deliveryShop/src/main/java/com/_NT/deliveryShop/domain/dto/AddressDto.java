@@ -15,12 +15,12 @@ public interface AddressDto {
 
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    class CreateAddressResponse {
+    class AddressResponse {
         private Long userId;
         private UUID deliveryAdressId;
         private String address;
 
-        public CreateAddressResponse(Long userId, UUID deliveryId, String address) {
+        public AddressResponse(Long userId, UUID deliveryId, String address) {
             this.userId = userId;
             this.deliveryAdressId = deliveryId;
             this.address = address;
