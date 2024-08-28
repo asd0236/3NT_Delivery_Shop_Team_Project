@@ -2,7 +2,7 @@ package com._NT.deliveryShop.service;
 
 import com._NT.deliveryShop.domain.entity.*;
 import com._NT.deliveryShop.repository.OrderRepository;
-import com._NT.deliveryShop.repository.RestaurantReposiotry;
+import com._NT.deliveryShop.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +20,7 @@ import static com._NT.deliveryShop.domain.dto.OrderDto.*;
 @RequiredArgsConstructor
 public class OrderService {
     private final OrderRepository orderRepository;
-    private final RestaurantReposiotry restaurantRepository;
+    private final RestaurantRepository restaurantRepository;
 
     @Transactional
     public CreateOrderResponse createOrder(CreateOrderRequest orderRequestDto, User user) {
