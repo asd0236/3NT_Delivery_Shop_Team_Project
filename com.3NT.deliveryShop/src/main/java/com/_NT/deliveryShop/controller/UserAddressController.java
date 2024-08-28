@@ -9,8 +9,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
-import static com._NT.deliveryShop.domain.dto.AddressDto.*;
+import static com._NT.deliveryShop.domain.dto.DeliveryAddressDto.*;
 import static com._NT.deliveryShop.domain.entity.UserRoleEnum.PreAuthorizeRole.*;
 
 @RestController
@@ -45,6 +46,21 @@ public class UserAddressController {
 
         return addressService.getAddressList(userDetails.getUser());
     }
+
+    // 배송지 삭제
+    @DeleteMapping("/{userId}/addresses/{addressId}")
+    @PreAuthorize("hasAnyRole(" + ADMIN + "," + OWNER + "," + USER + ")")
+    public void deleteAddress(
+            @PathVariable Long userId,
+            @PathVariable UUID addressId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        // 현재 인증된 사용자의 ID와 URL에 있는 ID가 일치하는지 확인
+        validateUserAccess(userId, userDetails);
+
+        addressService.deleteAddress(addressId, userDetails.getUser());
+    }
+
 
     private void validateUserAccess(Long userId, UserDetailsImpl userDetails) {
         // 현재 인증된 사용자의 ID와 URL에 있는 ID가 일치하는지 확인, ADMIN은 예외

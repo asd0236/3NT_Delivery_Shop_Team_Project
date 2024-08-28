@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-public interface AddressDto {
+public interface DeliveryAddressDto {
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     class CreateAddressRequest {
@@ -27,4 +27,13 @@ public interface AddressDto {
         }
     }
 
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    class DeleteAddressResponse {
+        private UUID deliveryAddressId;
+
+        public DeleteAddressResponse(UUID deliveryAddressId) {
+            this.deliveryAddressId = deliveryAddressId;
+        }
+    }
 }
