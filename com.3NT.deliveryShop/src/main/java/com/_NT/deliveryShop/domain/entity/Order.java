@@ -3,6 +3,7 @@ package com._NT.deliveryShop.domain.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public class Order extends Timestamped {
     @JoinColumn(name = "delivery_info_id", nullable = false)
     private DeliveryInfo deliveryInfo;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private OrderStatus status;
@@ -53,5 +55,14 @@ public class Order extends Timestamped {
         this.deliveryInfo = deliveryInfo;
         this.status = status;
         this.isOnline = isOnline;
+        // 연관관계 설정
+        if (payment != null) setPayment(payment);
+    }
+
+    public void setPayment(Payment payment) {
+        this.payment = payment;
+        if (payment.getOrder() != this) {
+            payment.setOrder(this);
+        }
     }
 }
