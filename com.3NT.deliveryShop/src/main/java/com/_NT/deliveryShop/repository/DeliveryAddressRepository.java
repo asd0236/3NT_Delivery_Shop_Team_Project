@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,6 +18,6 @@ public interface DeliveryAddressRepository extends JpaRepository<DeliveryAddress
     @Modifying
     @Query("UPDATE DeliveryAddress da SET da.isDeleted = true, da.deletedAt = :deletedAt, da.deletedBy = :deletedBy " +
             "WHERE da.deliveryAddressId = :addressId")
-    void deleteAddress(UUID addressId, Long deletedBy);
+    void deleteAddress(UUID addressId, Long deletedBy, LocalDateTime deletedAt);
 
 }
