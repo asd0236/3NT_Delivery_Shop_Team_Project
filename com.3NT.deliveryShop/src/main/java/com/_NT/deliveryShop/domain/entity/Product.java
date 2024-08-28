@@ -30,7 +30,7 @@ public class Product extends Timestamped {
     private String description;
 
     @Column(name = "price", nullable = false)
-    private int price;
+    private Integer price;
 
     @Column(name = "image_url", nullable = false)
     private String imageURL;
