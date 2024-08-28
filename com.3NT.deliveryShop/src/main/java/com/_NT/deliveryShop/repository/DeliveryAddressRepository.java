@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Repository
 public interface DeliveryAddressRepository extends JpaRepository<DeliveryAddress, UUID> {
-    @Query("SELECT da FROM DeliveryAddress da WHERE da.user.userId = :userId AND da.isDeleted = false")
+    @Query("SELECT da FROM DeliveryAddress da JOIN FETCH da.user WHERE da.user.userId = :userId AND da.isDeleted = false")
     List<DeliveryAddress> findAllByUserId(Long userId);
 
     @Modifying
