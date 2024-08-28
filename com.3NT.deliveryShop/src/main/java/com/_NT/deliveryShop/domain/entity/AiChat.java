@@ -31,6 +31,7 @@ public class AiChat extends Timestamped {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(name = "is_user_chat", nullable = false)
     private boolean isUserChat; // true 일 경우 유저의 채팅, false 일 경우 ai의 채팅
 
     @Column(name = "content", columnDefinition = "TEXT", nullable = false)
@@ -38,4 +39,12 @@ public class AiChat extends Timestamped {
 
     @Column(name = "chat_time", nullable = false)
     private LocalDateTime chatTime;
+
+    public AiChat(User user, boolean isUserChat, String content, LocalDateTime chatTime) {
+        this.user = user;
+        this.isUserChat = isUserChat;
+        this.content = content;
+        this.chatTime = chatTime;
+    }
+
 }
