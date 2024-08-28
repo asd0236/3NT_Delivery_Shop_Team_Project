@@ -14,7 +14,9 @@ import com._NT.deliveryShop.repository.RestaurantRepository;
 import com._NT.deliveryShop.repository.helper.RepositoryHelper;
 import com._NT.deliveryShop.repository.implementaion.RestaurantRepositoryImpl;
 import com._NT.deliveryShop.repository.searchcondition.RestaurantSearchCondition;
+import com._NT.deliveryShop.service.authorizer.AuthenticationInspector;
 import com._NT.deliveryShop.service.authorizer.RestaurantAuthorizer;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,7 @@ public class RestaurantService {
     private final CategoryService categoryService;
     private final RestaurantAuthorizer restaurantAuthorizer;
     private final RestaurantRepositoryImpl restaurantRepositoryImpl;
+    private final AuthenticationInspector authInspector;
 
 
     @PreAuthorize("hasAnyRole(" + ADMIN + "," + OWNER + ")")
@@ -105,10 +108,9 @@ public class RestaurantService {
 
         Restaurant restaurant = repoHelper.findRestaurantOrThrow404(id);
         restaurantAuthorizer.requireRestaurantOwner(authentication, restaurant);
+        User deleter = authInspector.getUserOrThrow(authentication);
 
-//        restaurant.setIsDeleted(true);
-//        restaurant.setDeletedBy(id);
-
-        return Result.Deleted.of(restaurantRepository.save(restaurant));
+        restaurantRepository.softDeleteRestaurant(id, LocalDateTime.now(), deleter.getUserId());
+        return Result.Deleted.of(restaurant);
     }
 }
