@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,8 +56,25 @@ public class AddressService {
         DeliveryAddress deliveryAddress = deliveryAddressRepository.findById(addressId).orElseThrow(
                 () -> new IllegalArgumentException("해당 주소를 찾을 수 없습니다."));
 
-        deliveryAddressRepository.deleteAddress(deliveryAddress.getDeliveryAddressId(), user.getUserId());
+        deliveryAddressRepository.deleteAddress(deliveryAddress.getDeliveryAddressId(), user.getUserId(), LocalDateTime.now());
 
         return new DeleteAddressResponse(deliveryAddress.getDeliveryAddressId());
+    }
+
+    /**
+     * 사용자 주소 수정
+     * @param addressId: DeliveryAddress ID
+     * @param requestDto: 주소 수정 요청 DTO address
+     * @param user: 사용자 정보
+     * @return AddressResponse: 주소 수정 응답 DTO userId, deliveryAdressId, address
+     */
+    @Transactional
+    public AddressResponse modifyAddress(UUID addressId, ModifyAddressRequest requestDto, User user) {
+        DeliveryAddress deliveryAddress = deliveryAddressRepository.findById(addressId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 주소를 찾을 수 없습니다."));
+
+        deliveryAddress.updateAddress(requestDto.getAddress());
+
+        return new AddressResponse(user.getUserId(), deliveryAddress.getDeliveryAddressId(), deliveryAddress.getAddress());
     }
 }

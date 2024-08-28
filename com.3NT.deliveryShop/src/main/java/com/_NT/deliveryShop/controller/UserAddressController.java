@@ -61,6 +61,20 @@ public class UserAddressController {
         addressService.deleteAddress(addressId, userDetails.getUser());
     }
 
+    // 배송지 수정
+    @PatchMapping("/{userId}/addresses/{addressId}")
+    @PreAuthorize("hasAnyRole(" + ADMIN + "," + OWNER + "," + USER + ")")
+    public AddressResponse modifyAddress(
+            @PathVariable Long userId,
+            @PathVariable UUID addressId,
+            @RequestBody ModifyAddressRequest requestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        // 현재 인증된 사용자의 ID와 URL에 있는 ID가 일치하는지 확인
+        validateUserAccess(userId, userDetails);
+
+        return addressService.modifyAddress(addressId, requestDto, userDetails.getUser());
+    }
 
     private void validateUserAccess(Long userId, UserDetailsImpl userDetails) {
         // 현재 인증된 사용자의 ID와 URL에 있는 ID가 일치하는지 확인, ADMIN은 예외

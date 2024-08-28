@@ -30,4 +30,8 @@ public class DeliveryAddress extends Timestamped {
         this.user = user;
         this.address = address;
     }
+
+    public void updateAddress(String address) {
+        this.address = address;
+    }
 }

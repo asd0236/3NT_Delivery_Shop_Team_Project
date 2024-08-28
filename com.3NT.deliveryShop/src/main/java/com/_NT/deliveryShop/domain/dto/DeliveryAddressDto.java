@@ -36,4 +36,11 @@ public interface DeliveryAddressDto {
             this.deliveryAddressId = deliveryAddressId;
         }
     }
+
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    class ModifyAddressRequest {
+        private String address;
+    }
+
 }
