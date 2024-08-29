@@ -29,7 +29,8 @@ public class OrderController {
 
     // 주문 단건 조회
     @GetMapping("/{orderId}")
-    public OrderResponse getOrder(@PathVariable UUID orderId, UserDetailsImpl userDetails) {
+    public OrderResponse getOrder(@PathVariable UUID orderId,
+                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return orderService.getOrder(orderId, userDetails.getUser());
     }
 
