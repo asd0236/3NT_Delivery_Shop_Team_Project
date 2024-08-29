@@ -71,7 +71,6 @@ public class RestaurantController {
     }
 
     @DeleteMapping("/{restaurantId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public Result.Deleted deleteRestaurant(@PathVariable UUID restaurantId,
         Authentication authentication) {
         return service.deleteRestaurant(restaurantId, authentication);
