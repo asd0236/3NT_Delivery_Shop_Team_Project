@@ -3,6 +3,7 @@ package com._NT.deliveryShop.repository.helper;
 import com._NT.deliveryShop.domain.entity.Category;
 import com._NT.deliveryShop.domain.entity.Product;
 import com._NT.deliveryShop.domain.entity.Restaurant;
+import com._NT.deliveryShop.domain.entity.Timestamped;
 import com._NT.deliveryShop.domain.entity.User;
 import jakarta.persistence.EntityManager;
 import java.util.UUID;
@@ -12,9 +13,10 @@ import org.springframework.web.server.ResponseStatusException;
 @Component
 public record RepositoryHelper(EntityManager em, ServiceErrorHelper errorHelper) {
 
-    public <T> T findOrThrow404(Class<T> clazz, Object primaryKey) throws ResponseStatusException {
+    public <T extends Timestamped> T findOrThrow404(Class<T> clazz, Object primaryKey)
+        throws ResponseStatusException {
         T entity = em.find(clazz, primaryKey);
-        if (entity == null) {
+        if (entity == null || entity.getIsDeleted()) {
             String reason = String.format("%s id was not found", clazz.getName());
             throw errorHelper.notFound(reason);
         }
