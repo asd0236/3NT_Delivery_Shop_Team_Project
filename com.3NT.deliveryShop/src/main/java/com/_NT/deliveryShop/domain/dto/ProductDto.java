@@ -88,6 +88,7 @@ public interface ProductDto {
                 .description(product.getDescription())
                 .price(product.getPrice())
                 .imageURL(product.getImageURL())
+                .isActivated(product.getIsActivated())
                 .build();
         }
 
