@@ -15,12 +15,10 @@ public interface OrderDto {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     class CreateOrderRequest {
         private UUID restaurantId;
-        private UUID deliveryInfoId;
         private Boolean isOnline;
 
-        public CreateOrderRequest(UUID restaurantId, UUID deliveryInfoId, Boolean isOnline) {
+        public CreateOrderRequest(UUID restaurantId, Boolean isOnline) {
             this.restaurantId = restaurantId;
-            this.deliveryInfoId = deliveryInfoId;
             this.isOnline = isOnline;
         }
     }
@@ -96,7 +94,8 @@ public interface OrderDto {
         private int totalPrice;
         private OrderStatus status;
         private Boolean isOnline;
-        private DeliveryInfoDto deliveryInfo;
+        private String deliveryAddress;
+        private String mobileNumber;
         private PaymentInfoDto paymentInfoDto;
         private List<Item> orderItems = new ArrayList<>();
 
@@ -106,7 +105,8 @@ public interface OrderDto {
             this.restaurantMobileNumber = order.getRestaurant().getMobileNumber();
             this.status = order.getStatus();
             this.isOnline = order.getIsOnline();
-            this.deliveryInfo = new DeliveryInfoDto(order.getDeliveryInfo());
+            this.deliveryAddress = order.getAddress();
+            this.mobileNumber = order.getMobileNumber();
             this.paymentInfoDto = new PaymentInfoDto(order.getPayment());
             for (OrderProduct orderProduct : order.getOrderProducts()) {
                 orderItems.add(new Item(orderProduct));
