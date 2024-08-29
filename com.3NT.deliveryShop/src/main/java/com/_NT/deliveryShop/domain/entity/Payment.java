@@ -1,20 +1,28 @@
 package com._NT.deliveryShop.domain.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(name = "p_payment")
 @Getter
 @NoArgsConstructor
 public class Payment extends Timestamped {
+
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @UuidGenerator
     @Column(name = "payment_id", updatable = false, nullable = false)
     private UUID paymentId;
 
@@ -45,7 +53,7 @@ public class Payment extends Timestamped {
     public void modifyPayment(int amount) {
         this.amount = amount;
     }
-  
+
     // 연관관계 편의 메서드
     public void setOrder(Order order) {
         this.order = order;
