@@ -1,5 +1,7 @@
 package com._NT.deliveryShop.service.authorizer;
 
+import static com._NT.deliveryShop.domain.entity.UserRoleEnum.Authority.ADMIN;
+
 import com._NT.deliveryShop.domain.entity.User;
 import com._NT.deliveryShop.repository.UserRepository;
 import com._NT.deliveryShop.repository.helper.ServiceErrorHelper;
@@ -29,7 +31,7 @@ public record AuthenticationInspector(
             throw errorHelper.unauthorized("Not authenticated");
         }
         return authentication.getAuthorities().stream()
-            .anyMatch(authority -> authority.getAuthority().equals("ADMIN"));
+            .anyMatch(authority -> authority.getAuthority().equals(ADMIN));
     }
 
 }
