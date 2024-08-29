@@ -47,14 +47,12 @@ public interface ProductDto {
         private final Integer price;
         private final String imageURL;
 
-        public Product asEntity(
-            Function<? super Product, ? extends Product> initialize) {
-            return initialize.apply(Product.builder()
-                .name(name)
-                .description(description)
-                .price(price)
-                .imageURL(imageURL)
-                .build());
+        public Product asPutEntity(Product product) {
+            product.setName(name);
+            product.setDescription(description);
+            product.setPrice(price);
+            product.setImageURL(imageURL);
+            return product;
         }
     }
 
