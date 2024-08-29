@@ -32,6 +32,7 @@ public class User extends Timestamped{
     private String mobileNumber;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private UserRoleEnum role;
 
     public User(String username, String password, String email, String mobileNumber, UserRoleEnum role) {
