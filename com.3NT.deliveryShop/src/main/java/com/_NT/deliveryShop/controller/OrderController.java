@@ -4,12 +4,14 @@ import com._NT.deliveryShop.security.UserDetailsImpl;
 import com._NT.deliveryShop.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 import static com._NT.deliveryShop.domain.dto.OrderDto.*;
+import static com._NT.deliveryShop.domain.entity.UserRoleEnum.PreAuthorizeRole.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,6 +21,7 @@ public class OrderController {
 
     // 주문 등록
     @PostMapping
+    @PreAuthorize("hasAnyRole(" + ADMIN +  "," + USER + ")")
     public CreateOrderResponse createOrder(@RequestBody CreateOrderRequest orderRequestDto,
                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return orderService.createOrder(orderRequestDto, userDetails.getUser());

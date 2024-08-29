@@ -24,12 +24,6 @@ public class OrderService {
 
     @Transactional
     public CreateOrderResponse createOrder(CreateOrderRequest orderRequestDto, User user) {
-        // 사용자 권한 가져와서 ADMIN, USER만 주문생성
-        UserRoleEnum userRole = user.getRole();
-
-        if (userRole != UserRoleEnum.ADMIN && userRole != UserRoleEnum.USER) {
-            throw new IllegalArgumentException("사용자 권한이 없습니다.");
-        }
 
         // 음식점 조회
         Restaurant restaurant = restaurantRepository.findById(orderRequestDto.getRestaurantId()).orElseThrow(
@@ -37,28 +31,14 @@ public class OrderService {
 
         // 배송지 정보
 
+
+
+
         // 상품 정보 조회
 
         // 주문 생성(주문 생성 시 주문 상태는 PAYMENT_PENDING)
         Order order = new Order(user, restaurant, null, OrderStatus.PAYMENT_PENDING, orderRequestDto.getIsOnline());
-
         orderRepository.save(order);
-
-        // 결제 로직 구현 시 주석 해제
-//        try {
-//             결제 처리 로직 수행(Payment Service 호출 반환 값은 Payment Entity)
-//
-//             결제 성공 시 주문에 결제 정보 추가
-//             order.setPayment(payment);
-//             order.setStatus(OrderStatus.PAYMENT_COMPLETED); // 결제 성공 시 주문 상태 변경
-//
-//             응답 dto 생성 및 반환
-//            return new OrderCreateResponseDto(order);
-//        } catch (Exception e) {
-//             결제 실패 시 주문 취소 처리 로직 수행
-//            order.setStatus(OrderStatus.PAYMENT_CANCELED); // 결제 실패 시 주문 상태 변경
-//            return new OrderCreateResponseDto(order);
-//        }
 
         return new CreateOrderResponse(order);
     }
