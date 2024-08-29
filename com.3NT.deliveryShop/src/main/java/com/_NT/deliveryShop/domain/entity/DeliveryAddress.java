@@ -30,4 +30,13 @@ public class DeliveryAddress extends Timestamped {
 
     @Column(name = "address", nullable = false)
     private String address;
+
+    public DeliveryAddress(User user, String address) {
+        this.user = user;
+        this.address = address;
+    }
+
+    public void updateAddress(String address) {
+        this.address = address;
+    }
 }

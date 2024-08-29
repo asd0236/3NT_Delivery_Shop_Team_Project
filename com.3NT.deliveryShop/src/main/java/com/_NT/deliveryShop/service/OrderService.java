@@ -35,13 +35,12 @@ public class OrderService {
         Restaurant restaurant = restaurantRepository.findById(orderRequestDto.getRestaurantId()).orElseThrow(
                 () -> new NullPointerException("해당 음식점이 존재하지 않습니다."));
 
-        // 배송지 정보 조회
-        DeliveryInfo deliveryInfo = new DeliveryInfo();
+        // 배송지 정보
 
         // 상품 정보 조회
 
         // 주문 생성(주문 생성 시 주문 상태는 PAYMENT_PENDING)
-        Order order = new Order(user, restaurant, null, deliveryInfo, OrderStatus.PAYMENT_PENDING, orderRequestDto.getIsOnline());
+        Order order = new Order(user, restaurant, null, OrderStatus.PAYMENT_PENDING, orderRequestDto.getIsOnline());
 
         orderRepository.save(order);
 
