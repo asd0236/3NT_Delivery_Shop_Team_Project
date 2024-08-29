@@ -71,7 +71,7 @@ public class RestaurantService {
         return Result.of(restaurants);
     }
 
-    @PreAuthorize("hasAnyRole(" + ADMIN + OWNER + ")")
+    @PreAuthorize("hasAnyRole(" + ADMIN + "," + OWNER + ")")
     @Transactional
     public Result updateRestaurant(UUID id, Update dto, Authentication authentication) {
         Restaurant restaurant = repoHelper.findRestaurantOrThrow404(id);
