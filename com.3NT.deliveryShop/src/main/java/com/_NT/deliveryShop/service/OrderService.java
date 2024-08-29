@@ -1,7 +1,10 @@
 package com._NT.deliveryShop.service;
 
+import com._NT.deliveryShop.domain.dto.OrderProductDto;
 import com._NT.deliveryShop.domain.entity.*;
+import com._NT.deliveryShop.repository.OrderProductRepository;
 import com._NT.deliveryShop.repository.OrderRepository;
+import com._NT.deliveryShop.repository.ProductRepository;
 import com._NT.deliveryShop.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,24 +24,34 @@ import static com._NT.deliveryShop.domain.dto.OrderDto.*;
 public class OrderService {
     private final OrderRepository orderRepository;
     private final RestaurantRepository restaurantRepository;
+    private final OrderProductRepository orderProductRepository;
+    private final ProductRepository productRepository;
 
     @Transactional
     public CreateOrderResponse createOrder(CreateOrderRequest orderRequestDto, User user) {
-
         // 음식점 조회
         Restaurant restaurant = restaurantRepository.findById(orderRequestDto.getRestaurantId()).orElseThrow(
                 () -> new NullPointerException("해당 음식점이 존재하지 않습니다."));
 
-        // 배송지 정보
-
-
-
-
-        // 상품 정보 조회
-
         // 주문 생성(주문 생성 시 주문 상태는 PAYMENT_PENDING)
-        Order order = new Order(user, restaurant, null, OrderStatus.PAYMENT_PENDING, orderRequestDto.getIsOnline());
+        // Payment는 결제 시스템을 연동하여 결제 완료 시 주문 상태를 PAYMENT_COMPLETED로 변경
+        Order order = new Order(user, restaurant, null, OrderStatus.PAYMENT_PENDING,
+                                orderRequestDto.getDeliveryAddress(),
+                                orderRequestDto.getMobileNumber(),
+                                orderRequestDto.isOnline());
         orderRepository.save(order);
+
+        // 주문 상품 추가 및 상품 검증
+        for (OrderProductDto.CreateOrderProduct orderProductDto : orderRequestDto.getOrderItems()) {
+            // 주문 상품 검증
+            Product product = productRepository.findById(orderProductDto.getProductId()).orElseThrow(
+                    () -> new NullPointerException("해당 상품이 존재하지 않습니다."));
+
+
+            // 주문 상품 생성
+            OrderProduct orderProductEntity = new OrderProduct(order, product, orderProductDto.getQuantity());
+            orderProductRepository.save(orderProductEntity);
+        }
 
         return new CreateOrderResponse(order);
     }
