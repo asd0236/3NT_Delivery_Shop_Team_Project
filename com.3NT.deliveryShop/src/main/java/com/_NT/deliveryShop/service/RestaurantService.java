@@ -10,6 +10,8 @@ import com._NT.deliveryShop.domain.dto.CategoryDto;
 import com._NT.deliveryShop.domain.entity.Category;
 import com._NT.deliveryShop.domain.entity.Restaurant;
 import com._NT.deliveryShop.domain.entity.User;
+import com._NT.deliveryShop.repository.CategoryRepository;
+import com._NT.deliveryShop.repository.ProductRepository;
 import com._NT.deliveryShop.repository.RestaurantRepository;
 import com._NT.deliveryShop.repository.helper.RepositoryHelper;
 import com._NT.deliveryShop.repository.implementaion.RestaurantRepositoryImpl;
@@ -33,6 +35,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
+    private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
     private final RepositoryHelper repoHelper;
     private final CategoryService categoryService;
     private final RestaurantAuthorizer restaurantAuthorizer;
@@ -104,13 +108,20 @@ public class RestaurantService {
 
     @PreAuthorize("hasRole(" + ADMIN + ")")
     @Transactional
-    public Result.Deleted deleteRestaurant(UUID id, Authentication authentication) {
+    public Result.Deleted deleteRestaurant(UUID restaurantId, Authentication authentication) {
 
-        Restaurant restaurant = repoHelper.findRestaurantOrThrow404(id);
+        Restaurant restaurant = repoHelper.findRestaurantOrThrow404(restaurantId);
         restaurantAuthorizer.requireRestaurantOwner(authentication, restaurant);
         User deleter = authInspector.getUserOrThrow(authentication);
 
-        restaurantRepository.softDeleteRestaurant(id, LocalDateTime.now(), deleter.getUserId());
+        UUID categoryId = restaurant.getCategory().getCategoryId();
+        LocalDateTime now = LocalDateTime.now();
+        Long deleterId = deleter.getUserId();
+
+        categoryRepository.softDeleteCategory(categoryId, now, deleterId);
+        productRepository.softDeleteProductsByRestaurantId(restaurantId, now, deleterId);
+        restaurantRepository.softDeleteRestaurant(restaurantId, now, deleterId);
+
         return Result.Deleted.of(restaurant);
     }
 }
