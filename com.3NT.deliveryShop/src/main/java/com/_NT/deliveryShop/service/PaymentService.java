@@ -97,20 +97,6 @@ public class PaymentService {
     }
 
     @Transactional
-    public PaymentDto.Response modifyPayment(UUID paymentId, PaymentDto.Modify paymentDto) {
-
-        Payment payment = paymentRepository.findById(paymentId).orElse(null);
-
-        if(payment == null || payment.getIsDeleted()) {
-            throw new IllegalArgumentException("존재하지 않는 결제 정보입니다");
-        }
-
-        payment.modifyPayment(paymentDto.getAmount());
-
-        return PaymentDto.Response.of(paymentRepository.save(payment));
-    }
-
-    @Transactional
     public PaymentDto.DeletePaymentResult deletePayment(UUID paymentId, User user) {
 
         if(!paymentRepository.existsById(paymentId)){

@@ -47,14 +47,6 @@ public class PaymentController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{paymentId}")
-    @ResponseBody
-    public PaymentDto.Response modifyPayment(@PathVariable UUID paymentId,
-                                             @RequestBody PaymentDto.Modify paymentDto) {
-        return paymentService.modifyPayment(paymentId, paymentDto);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{paymentId}")
     @ResponseBody
     public PaymentDto.DeletePaymentResult deletePayment(@PathVariable UUID paymentId,

@@ -57,12 +57,6 @@ public interface PaymentDto {
 
     @Data
     @Builder
-    final class Modify {
-        private final int amount;
-    }
-
-    @Data
-    @Builder
     final class DeletePaymentResult {
         private final UUID paymentId;
     }
