@@ -20,5 +20,13 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
             "WHERE p.productId = :productId")
     void softDeleteProduct(UUID productId, LocalDateTime deletedAt, Long deletedBy);
 
+    @Modifying
+    @Query(
+        "UPDATE Product p SET p.isDeleted = true, p.deletedAt = :deletedAt, p.deletedBy = :deletedBy "
+            +
+            "WHERE p.restaurant.restaurantId = :restaurantId")
+    void softDeleteProductsByRestaurantId(UUID restaurantId, LocalDateTime deletedAt,
+        Long deletedBy);
+
     Page<Product> findAllByIsDeletedFalse(Pageable pageable);
 }
