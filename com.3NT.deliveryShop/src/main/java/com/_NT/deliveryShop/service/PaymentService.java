@@ -1,10 +1,7 @@
 package com._NT.deliveryShop.service;
 
 import com._NT.deliveryShop.domain.dto.PaymentDto;
-import com._NT.deliveryShop.domain.entity.Order;
-import com._NT.deliveryShop.domain.entity.Payment;
-import com._NT.deliveryShop.domain.entity.PaymentMethod;
-import com._NT.deliveryShop.domain.entity.User;
+import com._NT.deliveryShop.domain.entity.*;
 import com._NT.deliveryShop.repository.OrderRepository;
 import com._NT.deliveryShop.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
@@ -45,9 +42,21 @@ public class PaymentService {
             throw new AccessDeniedException("접근 권한이 없습니다.");
         }
 
-        Payment newPayment = new Payment(order, paymentDto.getAmount(), LocalDateTime.now(), PaymentMethod.CREDIT_CARD);
+        // 외부 API 요청 및 결제 완료를 가정
+        try {
+            // 결제 성공
+            Payment newPayment = new Payment(order, paymentDto.getAmount(), LocalDateTime.now(), PaymentMethod.CREDIT_CARD);
 
-        return PaymentDto.Response.of(paymentRepository.save(newPayment));
+            order.setPayment(newPayment);
+            order.setStatus(OrderStatus.PAYMENT_COMPLETED);
+
+            return PaymentDto.Response.of(paymentRepository.save(newPayment));
+        } catch(Exception e){
+            // 결제 실패 시 주문 취소
+
+            order.setStatus(OrderStatus.PAYMENT_CANCELED);
+            throw new RuntimeException("결제에 실패하여 주문이 취소되었습니다.", e);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -85,20 +94,6 @@ public class PaymentService {
         }
 
         return paymentList.map(PaymentDto.GetAllPaymentsResponse::new).stream().toList();
-    }
-
-    @Transactional
-    public PaymentDto.Response modifyPayment(UUID paymentId, PaymentDto.Modify paymentDto) {
-
-        Payment payment = paymentRepository.findById(paymentId).orElse(null);
-
-        if(payment == null || payment.getIsDeleted()) {
-            throw new IllegalArgumentException("존재하지 않는 결제 정보입니다");
-        }
-
-        payment.modifyPayment(paymentDto.getAmount());
-
-        return PaymentDto.Response.of(paymentRepository.save(payment));
     }
 
     @Transactional
