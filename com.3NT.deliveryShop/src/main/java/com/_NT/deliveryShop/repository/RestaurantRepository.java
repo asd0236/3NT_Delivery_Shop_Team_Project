@@ -3,6 +3,9 @@ package com._NT.deliveryShop.repository;
 import com._NT.deliveryShop.domain.entity.Restaurant;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -17,4 +20,6 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, UUID> {
             +
             "WHERE p.restaurantId = :restaurantId")
     void softDeleteRestaurant(UUID restaurantId, LocalDateTime deletedAt, Long deletedBy);
+
+    Page<Restaurant> findAllByIsDeletedFalse(Pageable pageable);
 }

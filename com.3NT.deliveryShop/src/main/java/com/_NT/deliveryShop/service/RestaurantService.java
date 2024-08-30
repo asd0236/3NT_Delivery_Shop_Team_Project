@@ -67,7 +67,7 @@ public class RestaurantService {
     }
 
     public List<Result> readRestaurants(Pageable pageable) {
-        return Result.of(restaurantRepository.findAll(pageable));
+        return Result.of(restaurantRepository.findAllByIsDeletedFalse(pageable));
     }
 
     public List<Result> searchRestaurant(RestaurantSearchCondition condition, Pageable pageable) {
