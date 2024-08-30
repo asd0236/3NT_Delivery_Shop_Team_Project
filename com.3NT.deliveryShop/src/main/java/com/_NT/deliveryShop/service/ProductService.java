@@ -71,9 +71,7 @@ public class ProductService {
         Product product = repoHelper.findProductOrThrow404(productId);
         Restaurant restaurant = repoHelper.findRestaurantOrThrow404(dto.getRestaurantId());
 
-        product = dto.asEntity(it -> it
-            .withRestaurant(restaurant)
-            .withProductId(productId));
+        product = dto.asPutEntity(product);
 
         return Result.of(productRepository.save(product));
     }

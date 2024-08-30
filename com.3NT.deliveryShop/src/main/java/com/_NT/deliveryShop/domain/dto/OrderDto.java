@@ -10,17 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com._NT.deliveryShop.domain.dto.OrderProductDto.*;
+
 public interface OrderDto {
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     class CreateOrderRequest {
         private UUID restaurantId;
-        private Boolean isOnline;
-
-        public CreateOrderRequest(UUID restaurantId, Boolean isOnline) {
-            this.restaurantId = restaurantId;
-            this.isOnline = isOnline;
-        }
+        private List<CreateOrderProduct> orderItems;
+        private String deliveryAddress;
+        private String mobileNumber;
+        private boolean isOnline;
     }
 
     @Getter
@@ -29,7 +29,6 @@ public interface OrderDto {
         private UUID orderId;
         private Long userId;
         private UUID restaurantId;
-        private UUID paymentId;
         private OrderStatus status;
         private Boolean isOnline;
         private LocalDateTime createdAt;
@@ -41,7 +40,6 @@ public interface OrderDto {
             this.orderId = order.getOrderId();
             this.userId = order.getUser().getUserId();
             this.restaurantId = order.getRestaurant().getRestaurantId();
-            this.paymentId = order.getPayment().getPaymentId();
             this.status = order.getStatus();
             this.isOnline = order.getIsOnline();
             this.createdAt = order.getCreatedAt();
@@ -64,14 +62,16 @@ public interface OrderDto {
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     class Item {
+        private UUID productId;
         private String name;
         private int quantity;
-        private int totalPrice;
+        private int price;
 
         public Item(OrderProduct orderProduct) {
+            this.productId = orderProduct.getProduct().getProductId();
             this.name = orderProduct.getProduct().getName();
             this.quantity = orderProduct.getQuantity();
-            this.totalPrice = orderProduct.getProduct().getPrice() * orderProduct.getQuantity();
+            this.price = orderProduct.getProduct().getPrice();
         }
     }
 
@@ -111,9 +111,7 @@ public interface OrderDto {
             for (OrderProduct orderProduct : order.getOrderProducts()) {
                 orderItems.add(new Item(orderProduct));
             }
-            this.totalPrice = orderItems.stream()
-                    .mapToInt(Item::getTotalPrice)
-                    .sum();
+            this.totalPrice = orderItems.stream().mapToInt(item -> item.getPrice() * item.getQuantity()).sum();
         }
     }
 }

@@ -36,4 +36,11 @@ public class OrderProduct extends Timestamped {
 
     @Column(name = "total_price", nullable = false)
     private int totalPrice;
+
+    public OrderProduct(Order order, Product product, int quantity) {
+        this.order = order;
+        this.product = product;
+        this.quantity = quantity;
+        this.totalPrice = product.getPrice() * quantity;
+    }
 }

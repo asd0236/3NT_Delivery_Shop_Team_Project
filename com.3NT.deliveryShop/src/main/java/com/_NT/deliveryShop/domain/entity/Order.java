@@ -49,12 +49,14 @@ public class Order extends Timestamped {
     @OneToMany(mappedBy = "order")
     private List<OrderProduct> orderProducts;
 
-    public Order(User user, Restaurant restaurant, Payment payment, OrderStatus status, Boolean isOnline) {
+    public Order(User user, Restaurant restaurant, Payment payment, OrderStatus status, String address, String mobileNumber, Boolean isOnline) {
         this.user = user;
         this.restaurant = restaurant;
         this.payment = payment;
         this.status = status;
         this.isOnline = isOnline;
+        this.address = address;
+        this.mobileNumber = mobileNumber;
         // 연관관계 설정
         if (payment != null) setPayment(payment);
     }
