@@ -89,7 +89,7 @@ public class ProductController {
         @RequestBody Patch dto, Authentication authentication) {
 
         productAuthorizer.requireRestaurantOwner(authentication, dto.getRestaurantId());
-        return service.patchActivationProduct(productId, dto);
+        return service.patchProduct(productId, dto);
     }
 
     @PreAuthorize("hasAnyRole(" + ADMIN + "," + OWNER + ")")
