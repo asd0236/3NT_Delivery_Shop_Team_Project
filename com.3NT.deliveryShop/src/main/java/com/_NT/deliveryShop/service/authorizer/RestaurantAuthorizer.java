@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class RestaurantAuthorizer extends AbstractAuthorizer {
 
-    private final RepositoryHelper repositoryHelper;
+    protected final RepositoryHelper repositoryHelper;
 
     @Autowired
     public RestaurantAuthorizer(
