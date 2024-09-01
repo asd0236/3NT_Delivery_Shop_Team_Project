@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,8 +29,8 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RepositoryHelper repoHelper;
-
     private final PasswordEncoder passwordEncoder;
+    private final RedisTemplate<String, Object> redisTemplate;
 
 
     @Transactional
@@ -122,6 +123,8 @@ public class UserService {
                 userDto.getMobileNumber(),
                 userDto.getRole()
         );
+
+        redisTemplate.delete("user:" + userId);
 
         return UserDto.ModifyUserResult.of(userRepository.save(savedUser));
 
