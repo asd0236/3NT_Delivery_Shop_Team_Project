@@ -9,12 +9,12 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface OrderRepository extends JpaRepository<Order, UUID> {
-    @Query("SELECT o FROM Order o WHERE o.orderId = :orderId")
-    Optional<Order> findByOrderId(UUID orderId);
+
+    @Query("SELECT o FROM Order o WHERE o.isDeleted = false")
+    Page<Order> findAll(Pageable pageable);
 
     @Modifying
     @Query("UPDATE Order o SET o.isDeleted = true, o.deletedAt = :deletedAt, o.deletedBy = :deletedBy " +
