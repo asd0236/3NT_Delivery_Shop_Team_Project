@@ -3,16 +3,14 @@ package com._NT.deliveryShop.domain.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDate;
+import java.io.Serializable;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @Table(name = "p_users")
-public class User extends Timestamped{
+public class User extends Timestamped implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
