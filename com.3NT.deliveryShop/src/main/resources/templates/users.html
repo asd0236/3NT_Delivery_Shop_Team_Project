@@ -4,7 +4,6 @@
     <title>유저 관리</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
     <style>
-        /* 페이지 로딩 중 숨기기 위한 스타일 */
         #content {
             display: none;
         }
@@ -87,6 +86,65 @@
                 xhr.send();
             }
         }
+
+        // 모달을 여는 함수
+        function openModal(userId) {
+            document.getElementById('modal').style.display = "block";
+
+            // 모달 내의 폼에 유저 정보를 채움
+            document.getElementById('userId').value = userId
+
+        }
+
+        // 모달을 닫는 함수
+        function closeModal() {
+            document.getElementById('modal').style.display = "none";
+        }
+
+        // 유저 정보 수정 함수
+        function updateUser() {
+            const token = getCookie('token');
+            if (!token) {
+                alert('토큰이 없습니다. 다시 로그인해주세요.');
+                return;
+            }
+
+            const userId = document.getElementById('userId').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value;
+            const mobileNumber = document.getElementById('mobileNumber').value;
+            const role = document.getElementById('role').value;
+
+            const userData = {
+                username: username,
+                password: password,
+                email: email,
+                mobileNumber: mobileNumber,
+                role: role
+            };
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('PATCH', `/api/v1/users/${userId}`, true);
+            xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    // 응답 처리: 수정 완료 후 페이지 새로고침 또는 알림 표시
+                    alert('수정 완료되었습니다.');
+                    location.reload();
+                } else {
+                    // 오류 처리: 서버 응답에 따른 메시지 출력
+                    console.error('수정 실패:', xhr.status, xhr.responseText);
+                    alert('수정에 실패했습니다.');
+                }
+            };
+            xhr.onerror = function () {
+                console.error('요청 실패');
+                alert('요청에 실패했습니다.');
+            };
+            xhr.send(JSON.stringify(userData));
+        }
     </script>
 </head>
 <body>
@@ -105,12 +163,14 @@
         </thead>
         <tbody>
         <tr th:each="user : ${users}">
-            <td th:text="${user.userId}">1</td>
-            <td th:text="${user.username}">JohnDoe</td>
-            <td th:text="${user.email}">john.doe@example.com</td>
-            <td th:text="${user.mobileNumber}">010-1234-5678</td>
-            <td th:text="${user.role}">USER</td>
+            <td th:text="${user.userId}"></td>
+            <td th:text="${user.username}"></td>
+            <td th:text="${user.email}"></td>
+            <td th:text="${user.mobileNumber}"></td>
+            <td th:text="${user.role}"></td>
             <td>
+                <a href="#" th:attr="onclick='openModal(' + ${user.userId} + ')'" class="button">수정</a>
+
                 <a href="#" th:attr="onclick='deleteUser(' + ${user.userId} + ')' " class="button">삭제</a>
             </td>
 
@@ -118,5 +178,37 @@
         </tbody>
     </table>
 </div>
+
+<!-- 수정 모달 -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>유저 수정</h2>
+        <form>
+            <input type="hidden" id="userId" />
+            <label for="username">Username:</label>
+            <input type="text" id="username" /><br />
+
+            <label for="password">Password:</label>
+            <input type="text" id="password" /><br />
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" /><br />
+
+            <label for="mobileNumber">Mobile Number:</label>
+            <input type="text" id="mobileNumber" /><br />
+
+            <label for="role">Role:</label>
+            <select id="role">
+                <option value="USER">USER</option>
+                <option value="OWNER">OWNER</option>
+                <option value="ADMIN">ADMIN</option>
+            </select><br />
+
+            <button type="button" onclick="updateUser()">수정 완료</button>
+        </form>
+    </div>
+</div>
+
 </body>
 </html>

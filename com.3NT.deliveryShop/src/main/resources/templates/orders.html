@@ -88,6 +88,57 @@
                 xhr.send();
             }
         }
+
+        // 모달을 여는 함수
+        function openModal(orderId) {
+            document.getElementById('modal').style.display = "block";
+
+            document.getElementById('orderId').value = orderId
+
+        }
+
+        // 모달을 닫는 함수
+        function closeModal() {
+            document.getElementById('modal').style.display = "none";
+        }
+
+        // 주문 정보 수정 함수
+        function updateOrder() {
+            const token = getCookie('token');
+            if (!token) {
+                alert('토큰이 없습니다. 다시 로그인해주세요.');
+                return;
+            }
+
+            const orderId = document.getElementById('orderId').value;
+            const status = document.getElementById('status').value;
+
+            const orderData = {
+                status
+            };
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('PATCH', `/api/v1/orders/${orderId}`, true);
+            xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    // 응답 처리: 수정 완료 후 페이지 새로고침 또는 알림 표시
+                    alert('수정 완료되었습니다.');
+                    location.reload();
+                } else {
+                    // 오류 처리: 서버 응답에 따른 메시지 출력
+                    console.error('수정 실패:', xhr.status, xhr.responseText);
+                    alert('수정에 실패했습니다.');
+                }
+            };
+            xhr.onerror = function () {
+                console.error('요청 실패');
+                alert('요청에 실패했습니다.');
+            };
+            xhr.send(JSON.stringify(orderData));
+        }
+
     </script>
 </head>
 <body>
@@ -121,11 +172,40 @@
                 <a href="#"
                    th:attr="data-order-id=${order.orderId}"
                    class="button"
+                   onclick="openModal(this.getAttribute('data-order-id'))">수정</a>
+
+                <a href="#"
+                   th:attr="data-order-id=${order.orderId}"
+                   class="button"
                    onclick="deleteOrder(this.getAttribute('data-order-id'))">삭제</a>
             </td>
         </tr>
         </tbody>
     </table>
 </div>
+<!-- 수정 모달 -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>음식점 수정</h2>
+        <form>
+            <input type="hidden" id="orderId" />
+            <label for="status">Status:</label>
+            <select id="status">
+                <option value="PAYMENT_PENDING">PAYMENT_PENDING</option>
+                <option value="PAYMENT_CANCELED">PAYMENT_CANCELED</option>
+                <option value="PAYMENT_COMPLETED">PAYMENT_COMPLETED</option>
+                <option value="DELIVERY_PREPARING">DELIVERY_PREPARING</option>
+                <option value="DELIVERING">DELIVERING</option>
+                <option value="DELIVERED">DELIVERED</option>
+                <option value="CANCELED">CANCELED</option>
+
+            </select><br />
+
+            <button type="button" onclick="updateOrder()">수정 완료</button>
+        </form>
+    </div>
+</div>
+
 </body>
 </html>
