@@ -25,6 +25,6 @@ public enum UserRoleEnum {
 
         public static final String ADMIN = "T(com._NT.deliveryShop.domain.entity.UserRoleEnum).ADMIN.name()";
         public static final String OWNER = "T(com._NT.deliveryShop.domain.entity.UserRoleEnum).OWNER.name()";
-        public static final String USER = "T(com._NT.deliveryShop.domain.entity.UserRoleEnum).OWNER.name()";
+        public static final String USER = "T(com._NT.deliveryShop.domain.entity.UserRoleEnum).USER.name()";
     }
 }
