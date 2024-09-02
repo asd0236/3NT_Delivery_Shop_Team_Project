@@ -1,6 +1,6 @@
 package com._NT.deliveryShop.service.authorizer;
 
-import com._NT.deliveryShop.domain.entity.Restaurant;
+import com._NT.deliveryShop.domain.entity.Notice;
 import com._NT.deliveryShop.domain.entity.User;
 import com._NT.deliveryShop.repository.helper.RepositoryHelper;
 import com._NT.deliveryShop.repository.helper.ServiceErrorHelper;
@@ -9,28 +9,28 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RestaurantAuthorizer extends AbstractAuthorizer {
+public class NoticeAuthorizer extends AbstractAuthorizer {
 
-    public RestaurantAuthorizer(
+    public NoticeAuthorizer(
         AuthenticationInspector authInspector,
         ServiceErrorHelper errorHelper,
         RepositoryHelper repositoryHelper) {
         super(authInspector, errorHelper, repositoryHelper);
     }
 
-    public void requireRestaurantOwner(Authentication authentication,
-        Restaurant requestedRestaurant) {
+    public void requireNoticeOwner(Authentication authentication, Notice requestedNotice) {
         if (authInspector.isAdmin(authentication))
             return;
         User user = authInspector.getUserOrThrow(authentication);
 
-        if (user != requestedRestaurant.getOwner()) {
-            throw errorHelper.forbidden("Not the owner of the restaurant");
+        if (user != requestedNotice.getOwner()) {
+            throw errorHelper.forbidden("Not the owner of the notice");
         }
     }
 
-    public void requireRestaurantOwner(Authentication authentication, UUID restaurantId) {
-        Restaurant restaurant = repositoryHelper.findRestaurantOrThrow404(restaurantId);
-        requireRestaurantOwner(authentication, restaurant);
+    public void requireNoticeOwner(Authentication authentication, UUID noticeId) {
+        Notice notice = repositoryHelper.findNoticeOrThrow404(noticeId);
+        requireNoticeOwner(authentication, notice);
     }
+
 }

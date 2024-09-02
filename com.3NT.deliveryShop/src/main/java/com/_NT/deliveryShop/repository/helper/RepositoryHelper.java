@@ -1,7 +1,10 @@
 package com._NT.deliveryShop.repository.helper;
 
+import com._NT.deliveryShop.domain.entity.Answer;
 import com._NT.deliveryShop.domain.entity.Category;
+import com._NT.deliveryShop.domain.entity.Notice;
 import com._NT.deliveryShop.domain.entity.Product;
+import com._NT.deliveryShop.domain.entity.Report;
 import com._NT.deliveryShop.domain.entity.Restaurant;
 import com._NT.deliveryShop.domain.entity.Timestamped;
 import com._NT.deliveryShop.domain.entity.User;
@@ -38,4 +41,17 @@ public record RepositoryHelper(EntityManager em, ServiceErrorHelper errorHelper)
     public Product findProductOrThrow404(UUID id) throws ResponseStatusException {
         return findOrThrow404(Product.class, id);
     }
+
+    public Notice findNoticeOrThrow404(UUID id) throws ResponseStatusException {
+        return findOrThrow404(Notice.class, id);
+    }
+
+    public Report findReportOrThrow404(UUID id) throws ResponseStatusException {
+        return findOrThrow404(Report.class, id);
+    }
+
+    public Answer findAnswerOrThrow404(UUID id) throws ResponseStatusException {
+        return findOrThrow404(Answer.class, id);
+    }
+
 }
