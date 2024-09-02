@@ -5,22 +5,17 @@ import com._NT.deliveryShop.domain.entity.User;
 import com._NT.deliveryShop.repository.helper.RepositoryHelper;
 import com._NT.deliveryShop.repository.helper.ServiceErrorHelper;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 @Component
 public class RestaurantAuthorizer extends AbstractAuthorizer {
 
-    protected final RepositoryHelper repositoryHelper;
-
-    @Autowired
     public RestaurantAuthorizer(
         AuthenticationInspector authInspector,
         ServiceErrorHelper errorHelper,
         RepositoryHelper repositoryHelper) {
-        super(authInspector, errorHelper);
-        this.repositoryHelper = repositoryHelper;
+        super(authInspector, errorHelper, repositoryHelper);
     }
 
     public void requireRestaurantOwner(Authentication authentication,
