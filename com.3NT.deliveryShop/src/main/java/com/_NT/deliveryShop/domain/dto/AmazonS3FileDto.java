@@ -39,12 +39,12 @@ public interface AmazonS3FileDto {
         private String uploadFilePath;
         private String uploadFileUrl;
 
-        public static Result of(ProductImg productImg) {
+        public static <T extends UploadFile> Result of(T uploadFile) {
             return Result.builder()
-                .originalFileName(productImg.getOriginalFileName())
-                .uploadFileName(productImg.getUploadFileName())
-                .uploadFilePath(productImg.getUploadFilePath())
-                .uploadFileUrl(productImg.getUploadFileUrl())
+                .originalFileName(uploadFile.getOriginalFileName())
+                .uploadFileName(uploadFile.getUploadFileName())
+                .uploadFilePath(uploadFile.getUploadFilePath())
+                .uploadFileUrl(uploadFile.getUploadFileUrl())
                 .build();
         }
 
