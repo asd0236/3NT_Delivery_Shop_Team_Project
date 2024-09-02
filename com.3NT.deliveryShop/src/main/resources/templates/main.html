@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Main Page</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
+    <script>
+        // 쿠키에서 특정 이름의 값을 가져오는 함수
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        // 버튼 클릭 시 AJAX 요청 후 페이지 이동
+        function handleButtonClick(url) {
+            const token = getCookie('token');
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    // 새로운 페이지로 이동
+                    window.location.href = url;
+                } else {
+                    console.error('Request failed with status:', xhr.status);
+                }
+            };
+            xhr.onerror = function() {
+                console.error('Request failed.');
+            };
+            xhr.send();
+        }
+    </script>
+</head>
+<body>
+<h1>Admin Main Page</h1>
+<div>
+    <button onclick="handleButtonClick('/api/v1/admin/users')">User Management</button>
+    <button onclick="handleButtonClick('/api/v1/admin/restaurants')">Restaurant Management</button>
+    <button onclick="handleButtonClick('/api/v1/admin/products')">Product Management</button>
+    <button onclick="handleButtonClick('/api/v1/admin/orders')">Order Management</button>
+    <button onclick="handleButtonClick('/api/v1/admin/payments')">Payment Management</button>
+<!--    <button onclick="handleButtonClick('/api/v1/admin/addresses')">Address Management</button>-->
+</div>
+</body>
+</html>

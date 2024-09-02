@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>음식점 관리</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
+    <style>
+        /* 페이지 로딩 중 숨기기 위한 스타일 */
+        #content {
+            display: none;
+        }
+    </style>
+    <script>
+        // 페이지 로드 시 호출되는 함수
+        window.onload = async function () {
+            // 페이지 콘텐츠 요소
+            const content = document.getElementById('content');
+
+            const token = getCookie('token');
+            if (token) {
+                try {
+                    await validateToken(token);
+                    // 토큰 검증 성공 시 콘텐츠 표시
+                    content.style.display = 'block';
+                } catch (error) {
+                    console.error('Token validation failed:', error);
+                    // 토큰 검증 실패 시 로그인 페이지로 리다이렉트
+                    window.location.href = '/login';
+                }
+            } else {
+                // 토큰이 없으면 로그인 페이지로 리다이렉트
+                window.location.href = '/login';
+            }
+        };
+
+        // 쿠키에서 특정 이름의 값을 가져오는 함수
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null;
+        }
+
+        // 서버에서 토큰 검증을 수행하는 함수
+        function validateToken(token) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', '/api/v1/auth', true); // 토큰 검증 엔드포인트
+                xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+                xhr.onload = function () {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        resolve();
+                    } else {
+                        reject(new Error('Invalid token'));
+                    }
+                };
+                xhr.onerror = function () {
+                    reject(new Error('Request failed'));
+                };
+                xhr.send();
+            });
+        }
+
+        // 음식점 삭제 함수
+        function deleteRestaurant(restaurantId) {
+            console.log(restaurantId)
+            const token = getCookie('token');
+
+            if (!token) {
+                alert('토큰이 없습니다. 다시 로그인해주세요.');
+                return;
+            }
+
+            if (confirm('정말 음식점을 삭제하시겠습니까?')) {
+                const xhr = new XMLHttpRequest();
+                xhr.open('DELETE', `/api/v1/restaurants/` + restaurantId, true);
+                xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+                xhr.onload = function () {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        // 삭제 성공 시 페이지를 새로고침하거나 음식점 목록을 업데이트
+                        location.reload();
+                    } else {
+                        console.error('삭제 실패:', xhr.status, xhr.responseText);
+                    }
+                };
+                xhr.onerror = function () {
+                    console.error('요청 실패');
+                };
+                xhr.send();
+            }
+        }
+
+        // 모달을 여는 함수
+        function openModal(restaurantId) {
+            document.getElementById('modal').style.display = "block";
+
+            document.getElementById('restaurantId').value = restaurantId
+
+        }
+
+        // 모달을 닫는 함수
+        function closeModal() {
+            document.getElementById('modal').style.display = "none";
+        }
+
+        // 음식점 정보 수정 함수
+        function updateRestaurant() {
+            const token = getCookie('token');
+            if (!token) {
+                alert('토큰이 없습니다. 다시 로그인해주세요.');
+                return;
+            }
+
+            const restaurantId = document.getElementById('restaurantId').value;
+            const category = document.getElementById('category').value;
+            const ownerId = document.getElementById('ownerId').value;
+            const name = document.getElementById('name').value;
+            const mobileNumber = document.getElementById('mobileNumber').value;
+            const address = document.getElementById('address').value;
+            const businessStartHours = document.getElementById('businessStartHours').value;
+            const businessEndHours = document.getElementById('businessEndHours').value;
+            const imageURL = document.getElementById('imageURL').value;
+
+            const restaurantData = {
+                category: category,
+                ownerId: ownerId,
+                name: name,
+                mobileNumber: mobileNumber,
+                address: address,
+                businessStartHours: businessStartHours,
+                businessEndHours: businessEndHours,
+                imageURL: imageURL
+            };
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('PATCH', `/api/v1/restaurants/${restaurantId}`, true);
+            xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    // 응답 처리: 수정 완료 후 페이지 새로고침 또는 알림 표시
+                    alert('수정 완료되었습니다.');
+                    location.reload();
+                } else {
+                    // 오류 처리: 서버 응답에 따른 메시지 출력
+                    console.error('수정 실패:', xhr.status, xhr.responseText);
+                    alert('수정에 실패했습니다.');
+                }
+            };
+            xhr.onerror = function () {
+                console.error('요청 실패');
+                alert('요청에 실패했습니다.');
+            };
+            xhr.send(JSON.stringify(restaurantData));
+        }
+    </script>
+</head>
+<body>
+<div id="content">
+    <h1>음식점 관리</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>MobileNumber</th>
+            <th>Address</th>
+            <th>Business Start Hours</th>
+            <th>Business End Hours</th>
+            <th>ImageURL</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="restaurant : ${restaurants}">
+            <td th:text="${restaurant.restaurantId}"></td>
+            <td th:text="${restaurant.name}"></td>
+            <td th:text="${restaurant.categoryName}"></td>
+            <td th:text="${restaurant.mobileNumber}"></td>
+            <td th:text="${restaurant.address}"></td>
+            <td th:text="${restaurant.businessStartHours}"></td>
+            <td th:text="${restaurant.businessEndHours}"></td>
+            <td th:text="${restaurant.imageURL}"></td>
+            <td>
+                <a href="#"
+                   th:attr="data-restaurant-id=${restaurant.restaurantId}"
+                   class="button"
+                   onclick="openModal(this.getAttribute('data-restaurant-id'))">수정</a>
+
+                <a href="#"
+                   th:attr="data-restaurant-id=${restaurant.restaurantId}"
+                   class="button"
+                   onclick="deleteRestaurant(this.getAttribute('data-restaurant-id'))">삭제</a>
+            </td>
+
+
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- 수정 모달 -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>음식점 수정</h2>
+        <form>
+            <input type="hidden" id="restaurantId" />
+            <label for="category">Category:</label>
+            <input type="text" id="category" /><br />
+
+            <label for="ownerId">OwnerId:</label>
+            <input type="text" id="ownerId" /><br />
+
+            <label for="name">Name:</label>
+            <input type="email" id="name" /><br />
+
+            <label for="mobileNumber">Mobile Number:</label>
+            <input type="text" id="mobileNumber" /><br />
+
+            <label for="address">Address:</label>
+            <input type="text" id="address" /><br />
+
+            <label for="businessStartHours">Business Start Hours:</label>
+            <input type="text" id="businessStartHours" /><br />
+
+            <label for="businessEndHours">Business End Hours:</label>
+            <input type="text" id="businessEndHours" /><br />
+
+            <label for="imageURL">Image URL:</label>
+            <input type="text" id="imageURL" /><br />
+
+            <button type="button" onclick="updateRestaurant()">수정 완료</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
