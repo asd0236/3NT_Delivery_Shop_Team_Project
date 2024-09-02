@@ -27,7 +27,7 @@ public class UploadFile extends Timestamped {
     @Column(name = "upload_file_id")
     private UUID uploadFileId;
 
-    private UUID likedUUID;
+    private UUID linkedUUID;
 
     private String originalFileName;
 
@@ -38,9 +38,9 @@ public class UploadFile extends Timestamped {
     private String uploadFileUrl;
 
     @Builder
-    public UploadFile(UUID likedUUID, String originalFileName, String uploadFilePath,
+    public UploadFile(UUID linkedUUID, String originalFileName, String uploadFilePath,
         String uploadFileName, String uploadFileUrl) {
-        this.likedUUID = likedUUID;
+        this.linkedUUID = linkedUUID;
         this.originalFileName = originalFileName;
         this.uploadFilePath = uploadFilePath;
         this.uploadFileName = uploadFileName;
@@ -50,7 +50,7 @@ public class UploadFile extends Timestamped {
     @Builder
     public UploadFile(UploadFile base) {
         this.uploadFileId = base.uploadFileId;
-        this.likedUUID = base.likedUUID;
+        this.linkedUUID = base.linkedUUID;
         this.originalFileName = base.originalFileName;
         this.uploadFilePath = base.uploadFilePath;
         this.uploadFileName = base.uploadFileName;

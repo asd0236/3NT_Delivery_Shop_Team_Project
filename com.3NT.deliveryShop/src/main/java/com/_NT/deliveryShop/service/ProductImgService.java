@@ -29,7 +29,7 @@ public class ProductImgService {
     @Transactional
     public Result putProductImg(Put dto) {
 
-        Product product = repositoryHelper.findProductOrThrow404(dto.getLikedUUID());
+        Product product = repositoryHelper.findProductOrThrow404(dto.getLinkedUUID());
         Result uploadResult = amazonS3Service.uploadFile(dto);
         UploadFile uploadFile = dto.asEntityWith(uploadResult);
 

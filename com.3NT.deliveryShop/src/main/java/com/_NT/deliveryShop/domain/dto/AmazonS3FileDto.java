@@ -1,6 +1,5 @@
 package com._NT.deliveryShop.domain.dto;
 
-import com._NT.deliveryShop.domain.entity.ProductImg;
 import com._NT.deliveryShop.domain.entity.UploadFile;
 import java.util.UUID;
 import lombok.Builder;
@@ -15,12 +14,12 @@ public interface AmazonS3FileDto {
     @Builder
     class Put {
 
-        private UUID likedUUID;
+        private UUID linkedUUID;
         private MultipartFile multipartFile;
 
         public UploadFile asEntityWith(Result result) {
             return UploadFile.builder()
-                .likedUUID(likedUUID)
+                .linkedUUID(linkedUUID)
                 .originalFileName(result.getOriginalFileName())
                 .uploadFilePath(result.getUploadFilePath())
                 .uploadFileName(result.getUploadFileName())
