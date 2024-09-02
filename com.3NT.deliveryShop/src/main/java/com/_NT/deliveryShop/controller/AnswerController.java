@@ -1,10 +1,15 @@
 package com._NT.deliveryShop.controller;
 
+import static com._NT.deliveryShop.common.codes.SuccessCode.DELETE_SUCCESS;
+import static com._NT.deliveryShop.common.codes.SuccessCode.INSERT_SUCCESS;
+import static com._NT.deliveryShop.common.codes.SuccessCode.SELECT_SUCCESS;
+import static com._NT.deliveryShop.common.codes.SuccessCode.UPDATE_SUCCESS;
 import static com._NT.deliveryShop.domain.dto.AnswerDto.Create;
 import static com._NT.deliveryShop.domain.dto.AnswerDto.Put;
 import static com._NT.deliveryShop.domain.dto.AnswerDto.Result;
 import static com._NT.deliveryShop.domain.entity.UserRoleEnum.PreAuthorizeRole.ADMIN;
 
+import com._NT.deliveryShop.common.response.ResultResponse;
 import com._NT.deliveryShop.service.AnswerService;
 import com._NT.deliveryShop.service.authorizer.AnswerAuthorizer;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,54 +47,69 @@ public class AnswerController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "신고 게시글 답변 등록", description = "신고 게시글 답변을 등록합니다.")
     @ApiResponse(responseCode = "201", description = "신고 게시글 답변 등록 성공")
-    public Result postAnswer(@RequestBody Create dto, Authentication authentication) {
+    public ResultResponse<Result> postAnswer(@RequestBody Create dto,
+        Authentication authentication) {
 
         answerAuthorizer.requireByOneself(authentication, dto.getOwnerId());
-        return service.createAnswer(dto);
+        return ResultResponse.<Result>successBuilder()
+            .result(service.createAnswer(dto))
+            .successCode(INSERT_SUCCESS)
+            .build();
     }
 
     @GetMapping("/reports/{reportId}/answers")
     @Operation(summary = "신고 게시글을 기준으로 신고 게시글 답변 단건 조회", description = "신고 게시글 답변을 단건 조회합니다.")
     @ApiResponse(responseCode = "200", description = "신고 게시글 답변 조회 성공")
 
-    public Result getAnswer(
+    public ResultResponse<Result> getAnswer(
         @Schema(description = "신고 게시글 식별자", example = "UUID")
         @PathVariable UUID reportId, Authentication authentication) {
 
         answerAuthorizer.requireReportOwner(authentication, reportId);
-        return service.readAnswerByReportId(reportId);
+        return ResultResponse.<Result>successBuilder()
+            .result(service.readAnswerByReportId(reportId))
+            .successCode(SELECT_SUCCESS)
+            .build();
     }
 
     @PreAuthorize("hasRole(" + ADMIN + ")")
     @GetMapping("/answers")
     @Operation(summary = "신고 게시글 답변 전체 조회", description = "신고 게시글 답변을 전체 조회합니다.")
     @ApiResponse(responseCode = "200", description = "신고 게시글 답변 전체 조회 성공")
-    public List<Result> getAllAnswer(Pageable pageable) {
+    public ResultResponse<List<Result>> getAllAnswer(Pageable pageable) {
 
-        return service.readAllAnswer(pageable);
+        return ResultResponse.<List<Result>>successBuilder()
+            .result(service.readAllAnswer(pageable))
+            .successCode(SELECT_SUCCESS)
+            .build();
     }
 
     @PreAuthorize("hasRole(" + ADMIN + ")")
     @PutMapping("/answers/{id}")
     @Operation(summary = "신고 게시글 답변 수정", description = "신고 게시글 답변을 수정합니다.")
     @ApiResponse(responseCode = "200", description = "신고 게시글 답변 수정 성공")
-    public Result putAnswer(
+    public ResultResponse<Result> putAnswer(
         @Schema(description = "신고 게시글 답변 식별자", example = "UUID")
         @PathVariable UUID id,
         @RequestBody Put dto, Authentication authentication) {
 
-        answerAuthorizer.requireByOneself(authentication, dto.getUpdater());
-        return service.putAnswer(id, dto);
+        return ResultResponse.<Result>successBuilder()
+            .result(service.putAnswer(id, dto))
+            .successCode(UPDATE_SUCCESS)
+            .build();
     }
 
     @PreAuthorize("hasRole(" + ADMIN + ")")
     @DeleteMapping("/answers/{id}")
     @Operation(summary = "신고 게시글 답변 삭제", description = "신고 게시글 답변을 소프트 삭제합니다.")
     @ApiResponse(responseCode = "200", description = "신고 게시글 답변 삭제 성공")
-    public Result.Deleted deleteAnswer(
+    public ResultResponse<Result.Deleted> deleteAnswer(
         @Schema(description = "신고 게시글 답변 식별자", example = "UUID")
         @PathVariable UUID id, Authentication authentication) {
 
-        return service.deleteAnswer(id, authentication);
+        return ResultResponse.<Result.Deleted>successBuilder()
+            .result(service.deleteAnswer(id, authentication))
+            .successCode(DELETE_SUCCESS)
+            .build();
     }
 }

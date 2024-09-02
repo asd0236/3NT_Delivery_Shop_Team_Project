@@ -1,5 +1,9 @@
 package com._NT.deliveryShop.controller;
 
+import static com._NT.deliveryShop.common.codes.SuccessCode.DELETE_SUCCESS;
+import static com._NT.deliveryShop.common.codes.SuccessCode.INSERT_SUCCESS;
+import static com._NT.deliveryShop.common.codes.SuccessCode.SELECT_SUCCESS;
+import static com._NT.deliveryShop.common.codes.SuccessCode.UPDATE_SUCCESS;
 import static com._NT.deliveryShop.domain.dto.ProductDto.Create;
 import static com._NT.deliveryShop.domain.dto.ProductDto.Patch;
 import static com._NT.deliveryShop.domain.dto.ProductDto.Put;
@@ -7,6 +11,7 @@ import static com._NT.deliveryShop.domain.dto.ProductDto.Result;
 import static com._NT.deliveryShop.domain.entity.UserRoleEnum.PreAuthorizeRole.ADMIN;
 import static com._NT.deliveryShop.domain.entity.UserRoleEnum.PreAuthorizeRole.OWNER;
 
+import com._NT.deliveryShop.common.response.ResultResponse;
 import com._NT.deliveryShop.domain.dto.AmazonS3FileDto;
 import com._NT.deliveryShop.repository.searchcondition.ProductSearchCondition;
 import com._NT.deliveryShop.service.ProductImgService;
@@ -52,10 +57,14 @@ public class ProductController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "상품 등록", description = "상품을 등록합니다.")
     @ApiResponse(responseCode = "201", description = "상품 등록 성공")
-    public Result postProduct(@RequestBody Create dto, Authentication authentication) {
+    public ResultResponse<Result> postProduct(@RequestBody Create dto,
+        Authentication authentication) {
 
         productAuthorizer.requireRestaurantOwner(authentication, dto.getRestaurantId());
-        return service.createProduct(dto);
+        return ResultResponse.<Result>successBuilder()
+            .result(service.createProduct(dto))
+            .successCode(INSERT_SUCCESS)
+            .build();
     }
 
     @PreAuthorize("hasAnyRole(" + ADMIN + "," + OWNER + ")")
@@ -63,7 +72,7 @@ public class ProductController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "상품 이미지 등록", description = "상품 이미지 등록합니다.")
     @ApiResponse(responseCode = "201", description = "상품 등록 성공")
-    public Result putProductImg(@PathVariable UUID productId,
+    public ResultResponse<Result> putProductImg(@PathVariable UUID productId,
         @RequestParam(value = "file") MultipartFile multipartFile, Authentication authentication) {
 
         productAuthorizer.requireProductOwner(authentication, productId);
@@ -80,32 +89,41 @@ public class ProductController {
             .imageURL(productImgResult.getUploadFileUrl())
             .build();
 
-        return service.patchProduct(productId, patch);
+        return ResultResponse.<Result>successBuilder()
+            .result(service.patchProduct(productId, patch))
+            .successCode(INSERT_SUCCESS)
+            .build();
     }
 
     @GetMapping("/{productId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "상품 단건 조회", description = "상품을 단건 조회합니다.")
     @ApiResponse(responseCode = "200", description = "상품 조회 성공")
-    public Result getProduct(@PathVariable UUID productId) {
+    public ResultResponse<Result> getProduct(@PathVariable UUID productId) {
 
-        return service.readProduct(productId);
+        return ResultResponse.<Result>successBuilder()
+            .result(service.readProduct(productId))
+            .successCode(SELECT_SUCCESS)
+            .build();
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "상품 전체 조회", description = "상품을 전체 조회합니다.")
     @ApiResponse(responseCode = "200", description = "상품 전체 조회 성공")
-    public List<Result> getProducts(Pageable pageable) {
+    public ResultResponse<List<Result>> getProducts(Pageable pageable) {
 
-        return service.readProducts(pageable);
+        return ResultResponse.<List<Result>>successBuilder()
+            .result(service.readProducts(pageable))
+            .successCode(SELECT_SUCCESS)
+            .build();
     }
 
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "상품 검색", description = "상품을 검색합니다.")
     @ApiResponse(responseCode = "200", description = "상품 검색 성공")
-    public List<Result> searchProducts(
+    public ResultResponse<List<Result>> searchProducts(
         @RequestParam(required = false) String nameLike, //해당 이름이 들어간 모든 상품
         Pageable pageable
     ) {
@@ -113,18 +131,24 @@ public class ProductController {
             .nameLike(nameLike)
             .build();
 
-        return service.searchProducts(condition, pageable);
+        return ResultResponse.<List<Result>>successBuilder()
+            .result(service.searchProducts(condition, pageable))
+            .successCode(SELECT_SUCCESS)
+            .build();
     }
 
     @PreAuthorize("hasAnyRole(" + ADMIN + "," + OWNER + ")")
     @PutMapping("/{productId}")
     @Operation(summary = "상품 수정", description = "상품을 수정합니다.")
     @ApiResponse(responseCode = "200", description = "상품 수정 성공")
-    public Result putProduct(@PathVariable UUID productId,
+    public ResultResponse<Result> putProduct(@PathVariable UUID productId,
         @RequestBody Put dto, Authentication authentication) {
 
         productAuthorizer.requireRestaurantOwner(authentication, dto.getRestaurantId());
-        return service.putProduct(productId, dto);
+        return ResultResponse.<Result>successBuilder()
+            .result(service.putProduct(productId, dto))
+            .successCode(UPDATE_SUCCESS)
+            .build();
     }
 
     @PreAuthorize("hasAnyRole(" + ADMIN + "," + OWNER + ")")
@@ -132,13 +156,16 @@ public class ProductController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "상품 보임/숨김", description = "상품을 활성화/비활성화합니다.")
     @ApiResponse(responseCode = "200", description = "상품 활성화/비활성화 성공")
-    public Result patchActivationProduct(
+    public ResultResponse<Result> patchActivationProduct(
             @Schema(description = "상품 식별자", example = "UUID")
             @PathVariable UUID productId,
             @RequestBody Patch dto, Authentication authentication) {
 
         productAuthorizer.requireRestaurantOwner(authentication, dto.getRestaurantId());
-        return service.patchProduct(productId, dto);
+        return ResultResponse.<Result>successBuilder()
+            .result(service.patchProduct(productId, dto))
+            .successCode(UPDATE_SUCCESS)
+            .build();
     }
 
     @PreAuthorize("hasAnyRole(" + ADMIN + "," + OWNER + ")")
@@ -146,7 +173,7 @@ public class ProductController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "상품 삭제", description = "상품을 소프트 삭제합니다.")
     @ApiResponse(responseCode = "200", description = "상품 삭제 성공")
-    public Result.Deleted softDeleteProduct(
+    public ResultResponse<Result.Deleted> softDeleteProduct(
             @Schema(description = "상품 식별자", example = "UUID")
             @PathVariable UUID productId,
             Authentication authentication) {
@@ -154,6 +181,9 @@ public class ProductController {
         productAuthorizer.requireProductOwner(authentication, productId);
         Result.Deleted productDeleteResult = service.softDeleteProduct(productId, authentication);
         productImgService.deleteProductImg(productId, authentication);
-        return productDeleteResult;
+        return ResultResponse.<Result.Deleted>successBuilder()
+            .result(productDeleteResult)
+            .successCode(DELETE_SUCCESS)
+            .build();
     }
 }

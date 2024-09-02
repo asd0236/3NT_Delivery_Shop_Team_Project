@@ -1,11 +1,16 @@
 package com._NT.deliveryShop.controller;
 
+import static com._NT.deliveryShop.common.codes.SuccessCode.DELETE_SUCCESS;
+import static com._NT.deliveryShop.common.codes.SuccessCode.INSERT_SUCCESS;
+import static com._NT.deliveryShop.common.codes.SuccessCode.SELECT_SUCCESS;
+import static com._NT.deliveryShop.common.codes.SuccessCode.UPDATE_SUCCESS;
 import static com._NT.deliveryShop.domain.dto.RestaurantDto.Create;
 import static com._NT.deliveryShop.domain.dto.RestaurantDto.Result;
 import static com._NT.deliveryShop.domain.dto.RestaurantDto.Update;
 import static com._NT.deliveryShop.domain.entity.UserRoleEnum.PreAuthorizeRole.ADMIN;
 import static com._NT.deliveryShop.domain.entity.UserRoleEnum.PreAuthorizeRole.OWNER;
 
+import com._NT.deliveryShop.common.response.ResultResponse;
 import com._NT.deliveryShop.domain.dto.AmazonS3FileDto;
 import com._NT.deliveryShop.domain.dto.RestaurantDto;
 import com._NT.deliveryShop.repository.searchcondition.RestaurantSearchCondition;
@@ -52,9 +57,12 @@ public class RestaurantController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "음식점 등록", description = "음식점을 등록합니다.")
     @ApiResponse(responseCode = "201", description = "음식점 등록 성공")
-    public Result postRestaurant(@RequestBody Create dto,
+    public ResultResponse<Result> postRestaurant(@RequestBody Create dto,
         Authentication authentication) {
-        return service.createRestaurant(dto, authentication);
+        return ResultResponse.<Result>successBuilder()
+            .result(service.createRestaurant(dto, authentication))
+            .successCode(INSERT_SUCCESS)
+            .build();
     }
 
     @PreAuthorize("hasAnyRole(" + ADMIN + "," + OWNER + ")")
@@ -62,7 +70,7 @@ public class RestaurantController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "음식점 이미지 등록", description = "음식점을 이미지를 등록합니다.")
     @ApiResponse(responseCode = "201", description = "음식점 등록 성공")
-    public Result putRestaurantImg(@PathVariable UUID restaurantId,
+    public ResultResponse<Result> putRestaurantImg(@PathVariable UUID restaurantId,
         @RequestParam(value = "file") MultipartFile multipartFile, Authentication authentication) {
 
         restaurantAuthorizer.requireRestaurantOwner(authentication, restaurantId);
@@ -79,20 +87,26 @@ public class RestaurantController {
             .imageURL(restaurantImgResult.getUploadFileUrl())
             .build();
 
-        return service.updateRestaurant(restaurantId, update, authentication);
+        return ResultResponse.<Result>successBuilder()
+            .result(service.updateRestaurant(restaurantId, update, authentication))
+            .successCode(INSERT_SUCCESS)
+            .build();
     }
 
     @GetMapping("/{restaurantId}")
     @Operation(summary = "음식점 단건 조회", description = "음식점을 단건 조회합니다.")
     @ApiResponse(responseCode = "200", description = "음식점 조회 성공")
-    public Result getRestaurant(@PathVariable UUID restaurantId) {
-        return service.readRestaurant(restaurantId);
+    public ResultResponse<Result> getRestaurant(@PathVariable UUID restaurantId) {
+        return ResultResponse.<Result>successBuilder()
+            .result(service.readRestaurant(restaurantId))
+            .successCode(SELECT_SUCCESS)
+            .build();
     }
 
     @GetMapping("/search")
     @Operation(summary = "음식점 검색", description = "음식점을 검색합니다.")
     @ApiResponse(responseCode = "200", description = "음식점 검색 성공")
-    public List<Result> searchRestaurant(
+    public ResultResponse<List<Result>> searchRestaurant(
             @Schema(description = "음식점 이름 검색")
             @RequestParam(required = false) String nameLike, //해당 이름이 들어간 모든 음식점
             @Schema(description = "음식점 카테고리 검색")
@@ -104,33 +118,42 @@ public class RestaurantController {
             .categoryNames(categoryNames)
             .build();
 
-        return service.searchRestaurant(condition, pageable);
+        return ResultResponse.<List<Result>>successBuilder()
+            .result(service.searchRestaurant(condition, pageable))
+            .successCode(SELECT_SUCCESS)
+            .build();
     }
 
     @GetMapping
     @Operation(summary = "음식점 전체 조회", description = "음식점을 전체 조회합니다.")
     @ApiResponse(responseCode = "200", description = "음식점 전체 조회 성공")
-    public List<Result> getRestaurants(
+    public ResultResponse<List<Result>> getRestaurants(
         Pageable pageable
     ) {
 
-        return service.readRestaurants(pageable);
+        return ResultResponse.<List<Result>>successBuilder()
+            .result(service.readRestaurants(pageable))
+            .successCode(SELECT_SUCCESS)
+            .build();
     }
 
     @PatchMapping("/{restaurantId}")
     @Operation(summary = "음식점 수정", description = "음식점을 수정합니다.")
     @ApiResponse(responseCode = "200", description = "음식점 수정 성공")
-    public Result patchRestaurant(
+    public ResultResponse<Result> patchRestaurant(
             @Schema(description = "음식점 식별자", example = "UUID", required = true)
             @PathVariable UUID restaurantId,
             @RequestBody Update dto, Authentication authentication) {
-        return service.updateRestaurant(restaurantId, dto, authentication);
+        return ResultResponse.<Result>successBuilder()
+            .result(service.updateRestaurant(restaurantId, dto, authentication))
+            .successCode(UPDATE_SUCCESS)
+            .build();
     }
 
     @DeleteMapping("/{restaurantId}")
     @Operation(summary = "음식점 삭제", description = "음식점을 소프트 삭제합니다.")
     @ApiResponse(responseCode = "200", description = "음식점 삭제 성공")
-    public Result.Deleted deleteRestaurant(
+    public ResultResponse<Result.Deleted> deleteRestaurant(
             @Schema(description = "음식점 식별자", example = "UUID", required = true)
             @PathVariable UUID restaurantId,
             Authentication authentication) {
@@ -139,6 +162,9 @@ public class RestaurantController {
             authentication);
         restaurantImgService.deleteRestaurantImg(restaurantId, authentication);
         productImgService.deleteProductImagesByRestaurantId(restaurantId, authentication);
-        return restaurantDeleteResult;
+        return ResultResponse.<Result.Deleted>successBuilder()
+            .result(restaurantDeleteResult)
+            .successCode(DELETE_SUCCESS)
+            .build();
     }
 }
