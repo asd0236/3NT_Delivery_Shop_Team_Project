@@ -63,6 +63,7 @@ public interface ProductDto {
 
         private final UUID restaurantId;
         private final Boolean isActivated;
+        private final String imageURL;
     }
 
     @With

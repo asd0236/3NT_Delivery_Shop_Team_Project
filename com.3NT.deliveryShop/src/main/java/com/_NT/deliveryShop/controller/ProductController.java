@@ -7,7 +7,9 @@ import static com._NT.deliveryShop.domain.dto.ProductDto.Result;
 import static com._NT.deliveryShop.domain.entity.UserRoleEnum.PreAuthorizeRole.ADMIN;
 import static com._NT.deliveryShop.domain.entity.UserRoleEnum.PreAuthorizeRole.OWNER;
 
+import com._NT.deliveryShop.domain.dto.AmazonS3FileDto;
 import com._NT.deliveryShop.repository.searchcondition.ProductSearchCondition;
+import com._NT.deliveryShop.service.ProductImgService;
 import com._NT.deliveryShop.service.ProductService;
 import com._NT.deliveryShop.service.authorizer.ProductAuthorizer;
 import java.util.List;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductController {
 
     private final ProductService service;
+    private final ProductImgService productImgService;
     private final ProductAuthorizer productAuthorizer;
 
     @PreAuthorize("hasAnyRole(" + ADMIN + "," + OWNER + ")")
@@ -44,6 +48,29 @@ public class ProductController {
 
         productAuthorizer.requireRestaurantOwner(authentication, dto.getRestaurantId());
         return service.createProduct(dto);
+    }
+
+    @PreAuthorize("hasAnyRole(" + ADMIN + "," + OWNER + ")")
+    @PutMapping("/{productId}/image")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Result putProductImg(@PathVariable UUID productId,
+        @RequestParam(value = "file") MultipartFile multipartFile, Authentication authentication) {
+
+        productAuthorizer.requireProductOwner(authentication, productId);
+
+        AmazonS3FileDto.Put s3Dto = AmazonS3FileDto.Put.builder()
+            .likedUUID(productId)
+            .multipartFile(multipartFile)
+            .build();
+
+        AmazonS3FileDto.Result productImgResult =
+            productImgService.putProductImg(s3Dto);
+
+        Patch patch = Patch.builder()
+            .imageURL(productImgResult.getUploadFileUrl())
+            .build();
+
+        return service.patchProduct(productId, patch);
     }
 
     @GetMapping("/{productId}")
@@ -89,7 +116,7 @@ public class ProductController {
         @RequestBody Patch dto, Authentication authentication) {
 
         productAuthorizer.requireRestaurantOwner(authentication, dto.getRestaurantId());
-        return service.patchActivationProduct(productId, dto);
+        return service.patchProduct(productId, dto);
     }
 
     @PreAuthorize("hasAnyRole(" + ADMIN + "," + OWNER + ")")
@@ -98,6 +125,8 @@ public class ProductController {
     public Result.Deleted softDeleteProduct(@PathVariable UUID productId,
         Authentication authentication) {
 
-        return service.softDeleteProduct(productId, authentication);
+        Result.Deleted productDeleteResult = service.softDeleteProduct(productId, authentication);
+        productImgService.deleteProductImg(productId, authentication);
+        return productDeleteResult;
     }
 }

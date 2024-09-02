@@ -58,10 +58,13 @@ public class ProductService {
     }
 
     @Transactional
-    public Result patchActivationProduct(UUID productId, Patch dto) {
+    public Result patchProduct(UUID productId, Patch dto) {
 
         Product product = repoHelper.findProductOrThrow404(productId);
-        product.setIsActivated(dto.getIsActivated());
+        if (dto.getIsActivated() != null)
+            product.setIsActivated(dto.getIsActivated());
+        if (dto.getImageURL() != null)
+            product.setImageURL(dto.getImageURL());
         return Result.of(productRepository.save(product));
     }
 
