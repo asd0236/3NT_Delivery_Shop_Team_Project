@@ -37,8 +37,8 @@ jobs:
       # gradle을 통해 소스를 빌드. 테스트 수행 X
       - name: Build with Gradle
         run: |
-          chmod +x ./gradlew
-          ./gradlew clean build -x test
+          chmod +x ./com.3NT.deliveryShop/gradlew
+          ./com.3NT.deliveryShop/gradlew clean build -x test
 
   cd:
     runs-on: ubuntu-latest  # 실행 환경 지정 (ubuntu최신 버전에서 script를 실행)
@@ -60,7 +60,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./Dockerfile
+          file: ./com.3NT.deliveryShop/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_REPO }}:latest
 
