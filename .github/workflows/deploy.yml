@@ -13,7 +13,7 @@ permissions:
 
 # 실제 실행될 내용을 정의
 jobs:
-  ci:
+  build:
     runs-on: ubuntu-latest  # 실행 환경 지정 (ubuntu최신 버전에서 script를 실행)
 
     # 실행 스텝 지정
@@ -41,14 +41,6 @@ jobs:
           ./gradlew clean build -x test
         working-directory: ./com.3NT.deliveryShop
 
-
-
-  cd:
-    runs-on: ubuntu-latest  # 실행 환경 지정 (ubuntu최신 버전에서 script를 실행)
-    needs: ci
-    
-
-    steps:
       # dockerfile을 통해 이미지를 빌드하고, 이를 docker hub repo로 push
       # 이때 사용되는 ${{ secrets.DOCER_REPO }}/directors-dev가 위에서 만든 도커 repository이다.
       - name: Login to Docker Hub
@@ -57,16 +49,13 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
 
-      - name: Check directory structure
-        run: ls -la ./com.3NT.deliveryShop
-
-      - name: iamge build
-        run: docker build -t ljb5054385/3nt .
-        working-directory: ./com.3NT.deliveryShop
+      - name: Build Docker image
+        run: |
+          docker build -t ljb5054385/3nt ./com.3NT.deliveryShop
 
       - name: push
-        run: docker push ljb5054385/3nt
-
+        run: |
+          docker push ljb5054385/3nt
 
       # appleboy/ssh-action@master 액션을 사용하여 지장한 서버에 ssh로 접속하고, script를 실행한다.
       # script의 내용은 도커의 기존 프로세스들을 제거하고, docker hub  repo로부터 방금 push한 내용을 pull받아 실행하는 것
