@@ -10,6 +10,7 @@ import com._NT.deliveryShop.repository.ProductImgRepository;
 import com._NT.deliveryShop.repository.helper.RepositoryHelper;
 import com._NT.deliveryShop.service.authorizer.AuthenticationInspector;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -64,6 +65,22 @@ public class ProductImgService {
             Result.Deleted deletedResult = amazonS3Service.deleteFile(productImg);
             productImgRepository.softDeleteByUploadFileId(productImg.getUploadFileId(),
                 LocalDateTime.now(), deleterId);
+        }
+    }
+
+    @Transactional
+    public void deleteProductImagesByRestaurantId(UUID restaurantId,
+        Authentication authentication) {
+        Long deleterId = authInspector.getUserOrThrow(authentication).getUserId();
+        List<ProductImg> productImages = productImgRepository
+            .findAllInBatchByProductRestaurantRestaurantIdAndIsDeletedFalse(restaurantId);
+
+        if (!productImages.isEmpty()) {
+
+            List<UUID> UUIDs = amazonS3Service.deleteFiles(productImages);
+
+            productImgRepository.
+                softDeleteByUploadFileIds(UUIDs, LocalDateTime.now(), deleterId);
         }
     }
 }
