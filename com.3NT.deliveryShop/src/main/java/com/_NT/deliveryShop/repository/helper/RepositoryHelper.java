@@ -1,5 +1,6 @@
 package com._NT.deliveryShop.repository.helper;
 
+import com._NT.deliveryShop.domain.entity.Answer;
 import com._NT.deliveryShop.domain.entity.Category;
 import com._NT.deliveryShop.domain.entity.Notice;
 import com._NT.deliveryShop.domain.entity.Product;
@@ -47,6 +48,10 @@ public record RepositoryHelper(EntityManager em, ServiceErrorHelper errorHelper)
 
     public Report findReportOrThrow404(UUID id) throws ResponseStatusException {
         return findOrThrow404(Report.class, id);
+    }
+
+    public Answer findAnswerOrThrow404(UUID id) throws ResponseStatusException {
+        return findOrThrow404(Answer.class, id);
     }
 
 }
