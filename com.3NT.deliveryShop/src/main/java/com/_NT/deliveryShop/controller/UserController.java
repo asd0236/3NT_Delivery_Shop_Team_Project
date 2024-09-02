@@ -1,7 +1,18 @@
 package com._NT.deliveryShop.controller;
 
 
-import com._NT.deliveryShop.domain.dto.UserDto;
+import static com._NT.deliveryShop.common.codes.SuccessCode.DELETE_SUCCESS;
+import static com._NT.deliveryShop.common.codes.SuccessCode.INSERT_SUCCESS;
+import static com._NT.deliveryShop.common.codes.SuccessCode.SELECT_SUCCESS;
+import static com._NT.deliveryShop.common.codes.SuccessCode.UPDATE_SUCCESS;
+import static com._NT.deliveryShop.domain.dto.UserDto.Create;
+import static com._NT.deliveryShop.domain.dto.UserDto.DeleteUserResult;
+import static com._NT.deliveryShop.domain.dto.UserDto.GetAllUsersResponse;
+import static com._NT.deliveryShop.domain.dto.UserDto.Modify;
+import static com._NT.deliveryShop.domain.dto.UserDto.ModifyUserResult;
+import static com._NT.deliveryShop.domain.dto.UserDto.Result;
+
+import com._NT.deliveryShop.common.response.ResultResponse;
 import com._NT.deliveryShop.security.UserDetailsImpl;
 import com._NT.deliveryShop.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,19 +51,25 @@ public class UserController {
     @Operation(summary = "회원가입", description = "사용자를 등록합니다.")
     @ApiResponse(responseCode = "201", description = "사용자 등록 성공")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto.Result createUser(@RequestBody UserDto.Create userDto) {
+    public ResultResponse<Result> createUser(@RequestBody Create userDto) {
 
-        return userService.createUser(userDto);
+        return ResultResponse.<Result>successBuilder()
+            .result(userService.createUser(userDto))
+            .successCode(INSERT_SUCCESS)
+            .build();
     }
 
     @GetMapping("/{userId}")
     @ResponseBody
     @Operation(summary = "사용자 단건 조회", description = "사용자를 단건 조회합니다.")
     @ApiResponse(responseCode = "200", description = "사용자 조회 성공")
-    public UserDto.Result getUser(@PathVariable(value = "userId") Long userId,
+    public ResultResponse<Result> getUser(@PathVariable(value = "userId") Long userId,
                                   @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        return userService.getUser(userId, userDetails.getUser());
+        return ResultResponse.<Result>successBuilder()
+            .result(userService.getUser(userId, userDetails.getUser()))
+            .successCode(SELECT_SUCCESS)
+            .build();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -60,26 +77,32 @@ public class UserController {
     @ResponseBody
     @Operation(summary = "사용자 페이징 조회", description = "전체 사용자를 페이징 조회합니다.")
     @ApiResponse(responseCode = "200", description = "사용자 페이징 조회 성공")
-    public Collection<UserDto.GetAllUsersResponse> getAllUsers(
+    public ResultResponse<Collection<GetAllUsersResponse>> getAllUsers(
             @Schema(description = "페이지 번호(1부터 N까지)", defaultValue = "1")
             @RequestParam("page") int page,
             @Schema(description = "페이지에 출력할 개수를 입력합니다.", defaultValue = "10")
             @RequestParam("size") int size,
             @Schema(description = "정렬 기준을 입력합니다.")
             @RequestParam("sort") String sort){
-        return userService.getAllUsers(page - 1, size, sort);
+        return ResultResponse.<Collection<GetAllUsersResponse>>successBuilder()
+            .result(userService.getAllUsers(page - 1, size, sort))
+            .successCode(SELECT_SUCCESS)
+            .build();
     }
 
     @PatchMapping("/{userId}")
     @ResponseBody
     @Operation(summary = "사용자 수정", description = "사용자를 수정합니다.")
     @ApiResponse(responseCode = "200", description = "사용자 수정 성공")
-    public UserDto.ModifyUserResult modifyUser(
+    public ResultResponse<ModifyUserResult> modifyUser(
             @Schema(description = "사용자 식별자", example = "1", required = true)
             @PathVariable(value = "userId") Long userId,
-            @RequestBody UserDto.Modify userDto,
+        @RequestBody Modify userDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return userService.modifyUser(userId, userDto, userDetails.getUser());
+        return ResultResponse.<ModifyUserResult>successBuilder()
+            .result(userService.modifyUser(userId, userDto, userDetails.getUser()))
+            .successCode(UPDATE_SUCCESS)
+            .build();
     }
 
 
@@ -87,12 +110,15 @@ public class UserController {
     @ResponseBody
     @Operation(summary = "사용자 삭제", description = "사용자를 소프트 삭제합니다.")
     @ApiResponse(responseCode = "200", description = "사용자 삭제 성공")
-    public UserDto.DeleteUserResult deleteUser(
+    public ResultResponse<DeleteUserResult> deleteUser(
             @Schema(description = "사용자 식별자", example = "1", required = true)
             @PathVariable(value = "userId") Long userId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        return userService.deleteUser(userId, userDetails.getUser());
+        return ResultResponse.<DeleteUserResult>successBuilder()
+            .result(userService.deleteUser(userId, userDetails.getUser()))
+            .successCode(DELETE_SUCCESS)
+            .build();
     }
 
 }

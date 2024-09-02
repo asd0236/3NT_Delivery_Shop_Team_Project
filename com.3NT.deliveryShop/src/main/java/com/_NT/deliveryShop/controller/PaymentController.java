@@ -1,6 +1,14 @@
 package com._NT.deliveryShop.controller;
 
-import com._NT.deliveryShop.domain.dto.PaymentDto;
+import static com._NT.deliveryShop.common.codes.SuccessCode.DELETE_SUCCESS;
+import static com._NT.deliveryShop.common.codes.SuccessCode.INSERT_SUCCESS;
+import static com._NT.deliveryShop.common.codes.SuccessCode.SELECT_SUCCESS;
+import static com._NT.deliveryShop.domain.dto.PaymentDto.Create;
+import static com._NT.deliveryShop.domain.dto.PaymentDto.DeletePaymentResult;
+import static com._NT.deliveryShop.domain.dto.PaymentDto.GetAllPaymentsResponse;
+import static com._NT.deliveryShop.domain.dto.PaymentDto.Response;
+
+import com._NT.deliveryShop.common.response.ResultResponse;
 import com._NT.deliveryShop.security.UserDetailsImpl;
 import com._NT.deliveryShop.service.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,9 +47,12 @@ public class PaymentController {
     @Operation(summary = "결제 생성", description = "결제를 생성합니다.")
     @ApiResponse(responseCode = "201", description = "결제 생성 성공")
     @ResponseStatus(HttpStatus.CREATED)
-    public PaymentDto.Response createPayment(@RequestBody PaymentDto.Create paymentDto,
+    public ResultResponse<Response> createPayment(@RequestBody Create paymentDto,
                                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return paymentService.createPayment(paymentDto, userDetails.getUser());
+        return ResultResponse.<Response>successBuilder()
+            .result(paymentService.createPayment(paymentDto, userDetails.getUser()))
+            .successCode(INSERT_SUCCESS)
+            .build();
     }
 
 
@@ -49,18 +60,21 @@ public class PaymentController {
     @ResponseBody
     @Operation(summary = "결제 단건 조회", description = "결제를 조회합니다.")
     @ApiResponse(responseCode = "200", description = "결제 조회 성공")
-    public PaymentDto.Response getPayment(
+    public ResultResponse<Response> getPayment(
             @Schema(description = "결제 식별자", example = "UUID", required = true)
             @PathVariable UUID paymentId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return paymentService.getPayment(paymentId, userDetails.getUser());
+        return ResultResponse.<Response>successBuilder()
+            .result(paymentService.getPayment(paymentId, userDetails.getUser()))
+            .successCode(SELECT_SUCCESS)
+            .build();
     }
 
     @GetMapping
     @ResponseBody
     @Operation(summary = "결제 페이징 조회", description = "결제를 페이징 조회합니다.")
     @ApiResponse(responseCode = "200", description = "결제 페이징 조회 성공")
-    public Collection<PaymentDto.GetAllPaymentsResponse> getAllPayments(
+    public ResultResponse<Collection<GetAllPaymentsResponse>> getAllPayments(
             @Schema(description = "페이지 번호(1부터 N까지)", defaultValue = "1")
             @RequestParam("page") int page,
             @Schema(description = "페이지에 출력할 개수를 입력합니다.", defaultValue = "10")
@@ -68,7 +82,10 @@ public class PaymentController {
             @Schema(description = "정렬 기준을 입력합니다.")
             @RequestParam("sort") String sort,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return paymentService.getAllPayments(page - 1, size, sort, userDetails.getUser());
+        return ResultResponse.<Collection<GetAllPaymentsResponse>>successBuilder()
+            .result(paymentService.getAllPayments(page - 1, size, sort, userDetails.getUser()))
+            .successCode(SELECT_SUCCESS)
+            .build();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -76,11 +93,15 @@ public class PaymentController {
     @ResponseBody
     @Operation(summary = "결제 삭제", description = "결제를 소프트 삭제합니다.")
     @ApiResponse(responseCode = "200", description = "결제 삭제 성공")
-    public PaymentDto.DeletePaymentResult deletePayment(
+    public ResultResponse<DeletePaymentResult> deletePayment(
             @Schema(description = "결제 식별자", example = "UUID", required = true)
             @PathVariable UUID paymentId,
             @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return paymentService.deletePayment(paymentId, userDetails.getUser());
+
+        return ResultResponse.<DeletePaymentResult>successBuilder()
+            .result(paymentService.deletePayment(paymentId, userDetails.getUser()))
+            .successCode(DELETE_SUCCESS)
+            .build();
     }
 
 }
