@@ -30,9 +30,8 @@ jobs:
           distribution: 'temurin'
 
       - uses: actions/checkout@v3
-      - run: pwd
-      - run: touch ./src/main/resources/application.yml
-      - run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
+      - run: touch ./com.3NT.deliveryShop/src/main/resources/application.yml
+      - run: echo "${{ secrets.APPLICATION }}" > ./com.3NT.deliveryShop/src/main/resources/application.yml
       
 
       # gradle을 통해 소스를 빌드. 테스트 수행 X
