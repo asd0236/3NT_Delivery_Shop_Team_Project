@@ -8,14 +8,23 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.Collection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Collection;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "사용자", description = "사용자 등록, 조회, 수정, 삭제 API")
 @Slf4j
@@ -29,7 +38,8 @@ public class UserController {
     @PostMapping
     @ResponseBody
     @Operation(summary = "회원가입", description = "사용자를 등록합니다.")
-    @ApiResponse(responseCode = "200", description = "사용자 등록 성공")
+    @ApiResponse(responseCode = "201", description = "사용자 등록 성공")
+    @ResponseStatus(HttpStatus.CREATED)
     public UserDto.Result createUser(@RequestBody UserDto.Create userDto) {
 
         return userService.createUser(userDto);

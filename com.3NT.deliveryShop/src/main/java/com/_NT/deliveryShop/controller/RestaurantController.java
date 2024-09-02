@@ -52,7 +52,7 @@ public class RestaurantController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "음식점 등록", description = "음식점을 등록합니다.")
-    @ApiResponse(responseCode = "200", description = "음식점 등록 성공")
+    @ApiResponse(responseCode = "201", description = "음식점 등록 성공")
     public Result postRestaurant(@RequestBody Create dto,
         Authentication authentication) {
         return service.createRestaurant(dto, authentication);

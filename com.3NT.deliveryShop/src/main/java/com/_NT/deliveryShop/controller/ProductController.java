@@ -52,7 +52,7 @@ public class ProductController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "상품 등록", description = "상품을 등록합니다.")
-    @ApiResponse(responseCode = "200", description = "상품 등록 성공")
+    @ApiResponse(responseCode = "201", description = "상품 등록 성공")
     public Result postProduct(@RequestBody Create dto, Authentication authentication) {
 
         productAuthorizer.requireRestaurantOwner(authentication, dto.getRestaurantId());
