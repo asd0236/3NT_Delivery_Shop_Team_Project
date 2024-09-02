@@ -1,5 +1,7 @@
 package com._NT.deliveryShop.service;
 
+import com._NT.deliveryShop.common.codes.ErrorCode;
+import com._NT.deliveryShop.common.exception.CustomException;
 import com._NT.deliveryShop.domain.dto.OrderProductDto;
 import com._NT.deliveryShop.domain.entity.*;
 import com._NT.deliveryShop.repository.OrderProductRepository;
@@ -31,7 +33,7 @@ public class OrderService {
     public CreateOrderResponse createOrder(CreateOrderRequest orderRequestDto, User user) {
         // 음식점 조회
         Restaurant restaurant = restaurantRepository.findById(orderRequestDto.getRestaurantId()).orElseThrow(
-                () -> new NullPointerException("해당 음식점이 존재하지 않습니다."));
+                () -> new CustomException(ErrorCode.NOT_FOUND_ERROR, "해당 음식점이 존재하지 않습니다."));
 
         // 주문 생성(주문 생성 시 주문 상태는 PAYMENT_PENDING)
         // Payment는 결제 시스템을 연동하여 결제 완료 시 주문 상태를 PAYMENT_COMPLETED로 변경
@@ -45,7 +47,7 @@ public class OrderService {
         for (OrderProductDto.CreateOrderProduct orderProductDto : orderRequestDto.getOrderItems()) {
             // 주문 상품 검증
             Product product = productRepository.findById(orderProductDto.getProductId()).orElseThrow(
-                    () -> new NullPointerException("해당 상품이 존재하지 않습니다."));
+                    () -> new CustomException(ErrorCode.NOT_FOUND_ERROR, "해당 상품이 존재하지 않습니다."));
 
 
             // 주문 상품 생성
@@ -65,7 +67,7 @@ public class OrderService {
     @Transactional(readOnly = true)
     public OrderResponse getOrder(UUID orderId, User user) {
         Order order = orderRepository.findById(orderId).orElseThrow(
-                () -> new NullPointerException("해당 주문이 존재하지 않습니다."));
+                () -> new CustomException(ErrorCode.NOT_FOUND_ERROR, "해당 주문이 존재하지 않습니다."));
 
         validateUserAccess(order, user);
 
@@ -81,7 +83,7 @@ public class OrderService {
     @Transactional
     public DeleteResponse deleteOrder(UUID orderId, User user) {
         Order order = orderRepository.findById(orderId).orElseThrow(
-                () -> new NullPointerException("해당 주문이 존재하지 않습니다."));
+                () -> new CustomException(ErrorCode.NOT_FOUND_ERROR, "해당 주문이 존재하지 않습니다."));
 
         validateUserAccess(order, user);
         orderRepository.deleteOrder(orderId, LocalDateTime.now(), user.getUserId());
@@ -136,7 +138,7 @@ public class OrderService {
     @Transactional
     public OrderResponse modifyOrder(UUID orderId, ModifyRequest orderModifyRequestDto, User user) {
         Order order = orderRepository.findById(orderId).orElseThrow(
-                () -> new NullPointerException("해당 주문이 존재하지 않습니다."));
+                () -> new CustomException(ErrorCode.NOT_FOUND_ERROR, "해당 주문이 존재하지 않습니다."));
 
         validateUserAccess(order, user);
 
@@ -156,16 +158,16 @@ public class OrderService {
                 break;
             case USER:
                 if (!order.getUser().getUserId().equals(user.getUserId())) {
-                    throw new IllegalArgumentException("해당 주문에 접근할 수 없습니다. 본인의 주문만 조회할 수 있습니다.");
+                    throw new CustomException(ErrorCode.FORBIDDEN_ERROR, "해당 주문에 접근할 수 없습니다. 본인의 주문만 조회할 수 있습니다.");
                 }
                 break;
             case OWNER:
                 if (!order.getRestaurant().getOwner().getUserId().equals(user.getUserId())) {
-                    throw new IllegalArgumentException("해당 주문에 접근할 수 없습니다. 본인의 가게 주문만 조회할 수 있습니다.");
+                    throw new CustomException(ErrorCode.FORBIDDEN_ERROR, "해당 주문에 접근할 수 없습니다. 본인의 가게 주문만 조회할 수 있습니다.");
                 }
                 break;
             default:
-                throw new IllegalArgumentException("사용자 권한이 없습니다.");
+                throw new CustomException(ErrorCode.FORBIDDEN_ERROR, "해당 주문에 접근할 수 없습니다.");
         }
     }
 }
