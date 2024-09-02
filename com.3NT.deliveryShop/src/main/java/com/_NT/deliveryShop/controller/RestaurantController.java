@@ -24,6 +24,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.UUID;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -57,7 +59,7 @@ public class RestaurantController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "음식점 등록", description = "음식점을 등록합니다.")
     @ApiResponse(responseCode = "201", description = "음식점 등록 성공")
-    public ResultResponse<Result> postRestaurant(@RequestBody Create dto,
+    public ResultResponse<Result> postRestaurant(@RequestBody @Valid Create dto,
         Authentication authentication) {
         return ResultResponse.<Result>successBuilder()
             .result(service.createRestaurant(dto, authentication))
@@ -143,7 +145,7 @@ public class RestaurantController {
     public ResultResponse<Result> patchRestaurant(
             @Schema(description = "음식점 식별자", example = "UUID", required = true)
             @PathVariable UUID restaurantId,
-            @RequestBody Update dto, Authentication authentication) {
+            @RequestBody @Valid Update dto, Authentication authentication) {
         return ResultResponse.<Result>successBuilder()
             .result(service.updateRestaurant(restaurantId, dto, authentication))
             .successCode(UPDATE_SUCCESS)
