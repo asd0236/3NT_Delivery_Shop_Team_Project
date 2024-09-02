@@ -135,4 +135,15 @@ public class AmazonS3Service {
         String ext = fileName.substring(fileName.indexOf(".") + 1);
         return UUID.randomUUID() + "." + ext;
     }
+
+    public <T extends UploadFile> List<UUID> deleteFiles(List<T> uploadFiles) {
+        List<UUID> likedUUIDs = new ArrayList<>();
+
+        uploadFiles.forEach(uploadFile -> {
+            deleteFile(uploadFile.getLinkedUUID(), uploadFile.getUploadFileName());
+            likedUUIDs.add(uploadFile.getLinkedUUID());
+        });
+
+        return likedUUIDs;
+    }
 }
