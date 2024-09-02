@@ -8,6 +8,10 @@ import static com._NT.deliveryShop.domain.entity.UserRoleEnum.PreAuthorizeRole.A
 import com._NT.deliveryShop.repository.searchcondition.NoticeSearchCondition;
 import com._NT.deliveryShop.service.NoticeService;
 import com._NT.deliveryShop.service.authorizer.NoticeAuthorizer;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "공지사항", description = "공지사항 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/notices")
@@ -38,6 +43,8 @@ public class NoticeController {
     @PreAuthorize("hasRole(" + ADMIN + ")")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "공지사항 등록", description = "공지사항을 등록합니다.")
+    @ApiResponse(responseCode = "201", description = "공지사항 등록 성공")
     public Result postNotice(@RequestBody Create dto, Authentication authentication) {
 
         noticeAuthorizer.requireByOneself(authentication, dto.getOwnerId());
@@ -45,19 +52,29 @@ public class NoticeController {
     }
 
     @GetMapping("/{id}")
-    public Result getNotice(@PathVariable UUID id) {
+    @Operation(summary = "공지사항 단건 조회", description = "공지사항을 단건 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "공지사항 조회 성공")
+    public Result getNotice(
+        @Schema(description = "공지사항 식별자", example = "UUID")
+        @PathVariable UUID id) {
         return service.readNotice(id);
     }
 
     @GetMapping
+    @Operation(summary = "공지사항 전체 조회", description = "공지사항을 전체 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "공지사항 전체 조회 성공")
     public List<Result> getAllNotice(Pageable pageable) {
 
         return service.readAllNotice(pageable);
     }
 
     @GetMapping("/search")
+    @Operation(summary = "공지사항 검색", description = "공지사항을 검색합니다.")
+    @ApiResponse(responseCode = "200", description = "공지사항 검색 성공")
     public List<Result> searchNotice(
+        @Schema(description = "검색에 포함 시키고 싶은 공지사항 제목", example = "title")
         @RequestParam(required = false) String titleLike,
+        @Schema(description = "검색에 포함 시키고 싶은 공지사항 내용", example = "title")
         @RequestParam(required = false) String contentLike,
         Pageable pageable) {
         NoticeSearchCondition noticeSearchCondition = NoticeSearchCondition.builder()
@@ -70,7 +87,11 @@ public class NoticeController {
 
     @PreAuthorize("hasRole(" + ADMIN + ")")
     @PutMapping("/{id}")
-    public Result putNotice(@PathVariable UUID id,
+    @Operation(summary = "공지사항 수정", description = "공지사항을 수정합니다.")
+    @ApiResponse(responseCode = "200", description = "공지사항 수정 성공")
+    public Result putNotice(
+        @Schema(description = "공지사항 식별자", example = "UUID")
+        @PathVariable UUID id,
         @RequestBody Put dto, Authentication authentication) {
 
         noticeAuthorizer.requireByOneself(authentication, dto.getUpdater());
@@ -79,7 +100,11 @@ public class NoticeController {
 
     @PreAuthorize("hasRole(" + ADMIN + ")")
     @DeleteMapping("/{id}")
-    public Result.Deleted deleteNotice(@PathVariable UUID id, Authentication authentication) {
+    @Operation(summary = "공지사항 삭제", description = "공지사항을 소프트 삭제합니다.")
+    @ApiResponse(responseCode = "200", description = "공지사항 삭제 성공")
+    public Result.Deleted deleteNotice(
+        @Schema(description = "공지사항 식별자", example = "UUID")
+        @PathVariable UUID id, Authentication authentication) {
 
         return service.deleteNotice(id, authentication);
     }

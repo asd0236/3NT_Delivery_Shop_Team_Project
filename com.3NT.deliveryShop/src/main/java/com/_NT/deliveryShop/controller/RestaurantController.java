@@ -13,13 +13,12 @@ import com._NT.deliveryShop.service.ProductImgService;
 import com._NT.deliveryShop.service.RestaurantImgService;
 import com._NT.deliveryShop.service.RestaurantService;
 import com._NT.deliveryShop.service.authorizer.RestaurantAuthorizer;
-import java.util.List;
-import java.util.UUID;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -52,7 +51,7 @@ public class RestaurantController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "음식점 등록", description = "음식점을 등록합니다.")
-    @ApiResponse(responseCode = "200", description = "음식점 등록 성공")
+    @ApiResponse(responseCode = "201", description = "음식점 등록 성공")
     public Result postRestaurant(@RequestBody Create dto,
         Authentication authentication) {
         return service.createRestaurant(dto, authentication);
@@ -61,6 +60,8 @@ public class RestaurantController {
     @PreAuthorize("hasAnyRole(" + ADMIN + "," + OWNER + ")")
     @PutMapping("/{restaurantId}/image")
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "음식점 이미지 등록", description = "음식점을 이미지를 등록합니다.")
+    @ApiResponse(responseCode = "201", description = "음식점 등록 성공")
     public Result putRestaurantImg(@PathVariable UUID restaurantId,
         @RequestParam(value = "file") MultipartFile multipartFile, Authentication authentication) {
 
