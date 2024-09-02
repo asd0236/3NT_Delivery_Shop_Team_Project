@@ -56,3 +56,6 @@ jwt:
 ai:
   secret:
     key: ${AI_SECRET_KEY}
+
+springdoc:
+  use-fqn: true
