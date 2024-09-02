@@ -46,6 +46,7 @@ jobs:
   cd:
     runs-on: ubuntu-latest  # 실행 환경 지정 (ubuntu최신 버전에서 script를 실행)
     needs: ci
+    
 
     steps:
       # dockerfile을 통해 이미지를 빌드하고, 이를 docker hub repo로 push
@@ -63,7 +64,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./com.3NT.deliveryShop
-          file: ./com.3NT.deliveryShop/Dockerfile
+          file: Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_REPO }}:latest
 
