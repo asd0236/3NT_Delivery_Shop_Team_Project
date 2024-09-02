@@ -1,0 +1,58 @@
+spring:
+  datasource:
+    url: ${DATABASE_URL}
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+  # redis 설정
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      username: default
+
+  cache:
+    type: redis
+
+  # S3 limit
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+# AWS s3 설정
+cloud:
+  aws:
+    credentials:
+      access-key: ${ACCESS_KEY}
+      secret-key: ${SECRET_KEY}
+    region:
+      static: ap-northeast-2
+    stack:
+      audo : false
+    s3:
+      bucket: ${S3_BUCKET}
+
+
+  #logging.level:
+  #  org.hibernate.SQL: debug
+  #  org.hibernate.type: trace
+
+
+jwt:
+  secret:
+    key: ${JWT_SECRET_KEY}
+
+
+ai:
+  secret:
+    key: ${AI_SECRET_KEY}
