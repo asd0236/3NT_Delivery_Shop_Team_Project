@@ -125,6 +125,7 @@ public class ProductController {
     public Result.Deleted softDeleteProduct(@PathVariable UUID productId,
         Authentication authentication) {
 
+        productAuthorizer.requireProductOwner(authentication, productId);
         Result.Deleted productDeleteResult = service.softDeleteProduct(productId, authentication);
         productImgService.deleteProductImg(productId, authentication);
         return productDeleteResult;
