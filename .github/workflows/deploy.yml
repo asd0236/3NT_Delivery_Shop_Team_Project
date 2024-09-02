@@ -15,8 +15,6 @@ permissions:
 jobs:
   ci:
     runs-on: ubuntu-latest  # 실행 환경 지정 (ubuntu최신 버전에서 script를 실행)
-    env:
-      working-directory: ./com.3NT.deliveryShop
 
     # 실행 스텝 지정
     steps:
@@ -32,8 +30,8 @@ jobs:
           distribution: 'temurin'
 
       - uses: actions/checkout@v3
-      - run: touch ./src/main/resources/application.yml
-      - run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
+      - run: touch ./com.3NT.deliveryShop/src/main/resources/application.yml
+      - run: echo "${{ secrets.APPLICATION }}" > ./com.3NT.deliveryShop/src/main/resources/application.yml
       
 
       # gradle을 통해 소스를 빌드. 테스트 수행 X
@@ -41,11 +39,12 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew clean build -x test
+        working-directory: ./com.3NT.deliveryShop
+
+
 
   cd:
     runs-on: ubuntu-latest  # 실행 환경 지정 (ubuntu최신 버전에서 script를 실행)
-    env:
-      working-directory: ./com.3NT.deliveryShop
     needs: ci
 
     steps:
@@ -63,8 +62,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: .
-          file: ./Dockerfile
+          context: ./com.3NT.deliveryShop
+          file: ./com.3NT.deliveryShop/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_REPO }}:latest
 
