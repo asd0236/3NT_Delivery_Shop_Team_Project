@@ -1,6 +1,8 @@
 package com._NT.deliveryShop.domain.entity;
 
-public enum UserRoleEnum {
+import java.io.Serializable;
+
+public enum UserRoleEnum implements Serializable {
     USER(Authority.USER),  // 사용자 권한
     OWNER(Authority.OWNER), // 가게 사장님 권한
     ADMIN(Authority.ADMIN);  // 관리자 권한
