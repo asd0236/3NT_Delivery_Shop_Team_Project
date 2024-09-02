@@ -68,7 +68,7 @@ public class ProductController {
         productAuthorizer.requireProductOwner(authentication, productId);
 
         AmazonS3FileDto.Put s3Dto = AmazonS3FileDto.Put.builder()
-            .likedUUID(productId)
+            .linkedUUID(productId)
             .multipartFile(multipartFile)
             .build();
 

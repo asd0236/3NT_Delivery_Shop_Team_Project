@@ -48,7 +48,7 @@ public class AmazonS3Service {
 
     public Result uploadFile(Put dto) {
 
-        return uploadFile(dto.getLikedUUID(), dto.getMultipartFile());
+        return uploadFile(dto.getLinkedUUID(), dto.getMultipartFile());
     }
 
     private Result uploadFile(String uploadFilePath, MultipartFile multipartFile) {
@@ -116,7 +116,7 @@ public class AmazonS3Service {
     }
 
     public <T extends UploadFile> Result.Deleted deleteFile(T uploadFile) {
-        return deleteFile(uploadFile.getLikedUUID(), uploadFile.getUploadFileName());
+        return deleteFile(uploadFile.getLinkedUUID(), uploadFile.getUploadFileName());
     }
 
     public List<Result.Deleted> deleteFiles(UUID likedUUID, List<String> names) {
@@ -134,5 +134,16 @@ public class AmazonS3Service {
     public String getUuidFileName(String fileName) {
         String ext = fileName.substring(fileName.indexOf(".") + 1);
         return UUID.randomUUID() + "." + ext;
+    }
+
+    public <T extends UploadFile> List<UUID> deleteFiles(List<T> uploadFiles) {
+        List<UUID> likedUUIDs = new ArrayList<>();
+
+        uploadFiles.forEach(uploadFile -> {
+            deleteFile(uploadFile.getLinkedUUID(), uploadFile.getUploadFileName());
+            likedUUIDs.add(uploadFile.getLinkedUUID());
+        });
+
+        return likedUUIDs;
     }
 }
