@@ -16,6 +16,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Collection;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -41,7 +43,7 @@ public class AiChatController {
     @Operation(summary = "AI 채팅 생성", description = "AI 채팅을 생성합니다.")
     @ApiResponse(responseCode = "201", description = "AI 채팅 생성 성공")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResultResponse<Response> createChat(@RequestBody Create aiChatDto,
+    public ResultResponse<Response> createChat(@RequestBody @Valid Create aiChatDto,
                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResultResponse.<Response>successBuilder()
             .result(aiChatService.createChat(aiChatDto, userDetails.getUser()))

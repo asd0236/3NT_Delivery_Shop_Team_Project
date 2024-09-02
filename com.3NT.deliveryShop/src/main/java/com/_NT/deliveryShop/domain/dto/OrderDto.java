@@ -3,6 +3,10 @@ package com._NT.deliveryShop.domain.dto;
 import com._NT.deliveryShop.domain.entity.Order;
 import com._NT.deliveryShop.domain.entity.OrderProduct;
 import com._NT.deliveryShop.domain.entity.OrderStatus;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -16,10 +20,20 @@ public interface OrderDto {
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     class CreateOrderRequest {
+        @NotNull(message = "식당 ID는 필수 항목입니다.")
         private UUID restaurantId;
+
+        @NotNull(message = "주문 상품은 필수 항목입니다.")
         private List<CreateOrderProduct> orderItems;
+
+        @NotBlank(message = "배달 주소를 입력해주세요.")
+        @Size(max = 255, message = "배달 주소는 255자 이하로 입력해주세요.")
         private String deliveryAddress;
+
+        @NotBlank(message = "연락처를 입력해주세요.")
+        @Pattern(regexp = "^01(?:0|1|[6-9])-(?:\\d{3}|\\d{4})-\\d{4}$", message = "연락처 형식이 올바르지 않습니다.")
         private String mobileNumber;
+
         private boolean isOnline;
     }
 
@@ -78,6 +92,7 @@ public interface OrderDto {
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     class ModifyRequest {
+        @NotNull(message = "주문 상태를 입력해주세요.")
         private OrderStatus status;
 
         public ModifyRequest(OrderStatus status) {

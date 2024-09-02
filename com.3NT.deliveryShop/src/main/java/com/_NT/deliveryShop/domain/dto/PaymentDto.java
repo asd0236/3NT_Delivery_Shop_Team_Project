@@ -1,6 +1,8 @@
 package com._NT.deliveryShop.domain.dto;
 
 import com._NT.deliveryShop.domain.entity.Payment;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +15,11 @@ public interface PaymentDto {
     @Data
     @Builder
     final class Create {
+
+        @NotNull(message = "주문 ID는 필수 항목입니다.")
         private final UUID orderId;
+
+        @Min(value = 1, message = "결제 금액은 1원 이상이어야 합니다.")
         private final int amount;
     }
 

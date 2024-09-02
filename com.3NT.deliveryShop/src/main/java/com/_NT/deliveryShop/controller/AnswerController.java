@@ -18,6 +18,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.UUID;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -47,7 +49,7 @@ public class AnswerController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "신고 게시글 답변 등록", description = "신고 게시글 답변을 등록합니다.")
     @ApiResponse(responseCode = "201", description = "신고 게시글 답변 등록 성공")
-    public ResultResponse<Result> postAnswer(@RequestBody Create dto,
+    public ResultResponse<Result> postAnswer(@RequestBody @Valid Create dto,
         Authentication authentication) {
 
         answerAuthorizer.requireByOneself(authentication, dto.getOwnerId());
@@ -91,7 +93,7 @@ public class AnswerController {
     public ResultResponse<Result> putAnswer(
         @Schema(description = "신고 게시글 답변 식별자", example = "UUID")
         @PathVariable UUID id,
-        @RequestBody Put dto, Authentication authentication) {
+        @RequestBody @Valid Put dto, Authentication authentication) {
 
         return ResultResponse.<Result>successBuilder()
             .result(service.putAnswer(id, dto))

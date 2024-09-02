@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,7 +33,7 @@ public class OrderController {
     @PreAuthorize("hasAnyRole(" + ADMIN +  "," + USER + ")")
     @Operation(summary = "주문 등록", description = "주문을 등록합니다.")
     @ApiResponse(responseCode = "201", description = "주문 등록 성공")
-    public ResultResponse<CreateOrderResponse> createOrder(@RequestBody CreateOrderRequest orderRequestDto,
+    public ResultResponse<CreateOrderResponse> createOrder(@RequestBody @Valid CreateOrderRequest orderRequestDto,
                                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         CreateOrderResponse order = orderService.createOrder(orderRequestDto, userDetails.getUser());
 
@@ -107,7 +108,7 @@ public class OrderController {
     public ResultResponse<OrderResponse> modifyOrder(
             @Parameter(description = "주문 식별자", example = "UUID", required = true)
             @PathVariable UUID orderId,
-            @RequestBody ModifyRequest orderModifyRequestDto,
+            @RequestBody @Valid ModifyRequest orderModifyRequestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         OrderResponse orderResponse = orderService.modifyOrder(orderId, orderModifyRequestDto, userDetails.getUser());
         return ResultResponse.<OrderResponse>builder()
