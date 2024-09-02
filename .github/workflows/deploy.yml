@@ -29,10 +29,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Create and update application.yml
-        run: |
-          touch ./src/main/resources/application.yml
-          echo "${{ secrets.APPLICATION_YML }}" > ./src/main/resources/application.yml
+      - uses: actions/checkout@v3
+      - run: touch ./src/main/resources/application.yml
+      - run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
       
 
       # gradle을 통해 소스를 빌드. 테스트 수행 X
