@@ -1,0 +1,85 @@
+name: Java CI with Gradle
+
+# 워크플로가 시작될 조건 지정
+# 언제 이 파일의 내용이 실행될 것인지 정의
+# main 브랜치 코드가 푸쉬 될때만 실행됨
+on:
+  push:
+    branches: [ "main" ]
+
+# 코드의 내용을 이 파일을 실행하여 action을 수행하는 주체(Github actions에서 사용하는 VM)가 읽을 수 있도록 허용한다는 의미
+permissions:
+  contents: read
+
+# 실제 실행될 내용을 정의
+jobs:
+  ci:
+    runs-on: ubuntu-latest  # 실행 환경 지정 (ubuntu최신 버전에서 script를 실행)
+
+    # 실행 스텝 지정
+    steps:
+      # 지정한 저장소(현재 레포지토리)에서 코드를 워크 플로우 환경으로 가져오도록 하는 github action
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # open jdk 17 버전 환경을 세팅
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Create and update application.yml
+        run: |
+          touch ./src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION_YML }}" > ./src/main/resources/application.yml
+      
+
+      # gradle을 통해 소스를 빌드. 테스트 수행 X
+      - name: Build with Gradle
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean build -x test
+
+  cd:
+    runs-on: ubuntu-latest  # 실행 환경 지정 (ubuntu최신 버전에서 script를 실행)
+    needs: ci
+
+    steps:
+      # dockerfile을 통해 이미지를 빌드하고, 이를 docker hub repo로 push
+      # 이때 사용되는 ${{ secrets.DOCER_REPO }}/directors-dev가 위에서 만든 도커 repository이다.
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_REPO }}:latest
+
+
+      # appleboy/ssh-action@master 액션을 사용하여 지장한 서버에 ssh로 접속하고, script를 실행한다.
+      # script의 내용은 도커의 기존 프로세스들을 제거하고, docker hub  repo로부터 방금 push한 내용을 pull받아 실행하는 것
+      # 실행시 docker-compose를 사용함
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          key: ${{ secrets.AWS_KEY }}
+          host: ${{ secrets.AWS_IP }}
+          username: ${{ secrets.USERNAME }}
+          port: ${{ secrets.PORT }}
+          script: |
+            sudo docker rm -f $(docker ps -qa)
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME_AND_IMAGENAME }}
+            sudo docker-compose up -d
+            sudo docker image prune -f
+        
+
