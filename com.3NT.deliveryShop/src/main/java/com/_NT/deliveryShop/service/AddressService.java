@@ -1,5 +1,7 @@
 package com._NT.deliveryShop.service;
 
+import com._NT.deliveryShop.common.codes.ErrorCode;
+import com._NT.deliveryShop.common.exception.CustomException;
 import com._NT.deliveryShop.domain.entity.DeliveryAddress;
 import com._NT.deliveryShop.domain.entity.User;
 import com._NT.deliveryShop.repository.DeliveryAddressRepository;
@@ -54,7 +56,7 @@ public class AddressService {
     @Transactional
     public DeleteAddressResponse deleteAddress(UUID addressId, User user) {
         DeliveryAddress deliveryAddress = deliveryAddressRepository.findById(addressId).orElseThrow(
-                () -> new IllegalArgumentException("해당 주소를 찾을 수 없습니다."));
+                () -> new CustomException(ErrorCode.NOT_FOUND_ERROR, "해당 주소를 찾을 수 없습니다."));
 
         deliveryAddressRepository.deleteAddress(deliveryAddress.getDeliveryAddressId(), user.getUserId(), LocalDateTime.now());
 
@@ -71,7 +73,7 @@ public class AddressService {
     @Transactional
     public AddressResponse modifyAddress(UUID addressId, ModifyAddressRequest requestDto, User user) {
         DeliveryAddress deliveryAddress = deliveryAddressRepository.findById(addressId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 주소를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ERROR, "해당 주소를 찾을 수 없습니다."));
 
         deliveryAddress.updateAddress(requestDto.getAddress());
 
