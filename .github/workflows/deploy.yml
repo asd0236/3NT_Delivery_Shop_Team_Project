@@ -57,16 +57,12 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+      - name: iamge build
+        run: docker build -t ljb5054385/3nt .
+        working-directory: ./com.3NT.deliveryShop
 
-      - name: Build and push
-        uses: docker/build-push-action@v4
-        with:
-          context: ./com.3NT.deliveryShop
-          file: Dockerfile
-          push: true
-          tags: ${{ secrets.DOCKERHUB_REPO }}:latest
+      - name: push
+        run: docker push ljb5054385/3nt
 
 
       # appleboy/ssh-action@master 액션을 사용하여 지장한 서버에 ssh로 접속하고, script를 실행한다.
