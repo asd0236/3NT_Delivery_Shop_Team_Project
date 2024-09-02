@@ -73,11 +73,9 @@ public class WebSecurityConfig {
                         .requestMatchers("/error").permitAll() // 에러 페이지 요청 허가
                         .requestMatchers("/api/v1/users").permitAll() // 회원가입 페이지 요청 허가
                         .requestMatchers("/api/v1/users/login").permitAll() // 로그인 페이지 요청 허가
-
+                        .requestMatchers("/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**")
+                        .permitAll() // Swagger 페이지 요청 허가
                         .requestMatchers("api/v1/admin/**").permitAll() // 백오피스 요청 허가
-//                        .requestMatchers("/api/v1/auth").permitAll() // 백오피스 인증 요청 허가
-
-
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 
