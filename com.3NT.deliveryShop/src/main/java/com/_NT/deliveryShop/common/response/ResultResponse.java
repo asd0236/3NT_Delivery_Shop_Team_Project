@@ -1,8 +1,9 @@
 package com._NT.deliveryShop.common.response;
 
-import lombok.*;
-
+import com._NT.deliveryShop.common.codes.SuccessCode;
 import java.io.Serializable;
+import lombok.Builder;
+import lombok.Getter;
 
 /**
  * API Response 공통 클래스
@@ -23,5 +24,12 @@ public class ResultResponse<T> implements Serializable {
         this.result = result;
         this.resultCode = resultCode;
         this.resultMessage = resultMessage;
+    }
+
+    @Builder(builderMethodName = "successBuilder")
+    public ResultResponse(final T result, final SuccessCode successCode) {
+        this.result = result;
+        this.resultCode = successCode.getStatus();
+        this.resultMessage = successCode.getMessage();
     }
 }

@@ -1,9 +1,14 @@
 package com._NT.deliveryShop.controller;
 
+import static com._NT.deliveryShop.common.codes.SuccessCode.DELETE_SUCCESS;
+import static com._NT.deliveryShop.common.codes.SuccessCode.INSERT_SUCCESS;
+import static com._NT.deliveryShop.common.codes.SuccessCode.SELECT_SUCCESS;
+import static com._NT.deliveryShop.common.codes.SuccessCode.UPDATE_SUCCESS;
 import static com._NT.deliveryShop.domain.dto.ReportDto.Create;
 import static com._NT.deliveryShop.domain.dto.ReportDto.Put;
 import static com._NT.deliveryShop.domain.dto.ReportDto.Result;
 
+import com._NT.deliveryShop.common.response.ResultResponse;
 import com._NT.deliveryShop.domain.entity.UserRoleEnum;
 import com._NT.deliveryShop.security.UserDetailsImpl;
 import com._NT.deliveryShop.service.ReportService;
@@ -14,6 +19,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.UUID;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -43,21 +50,29 @@ public class ReportController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "신고 게시글 등록", description = "신고 게시글을 등록합니다.")
     @ApiResponse(responseCode = "201", description = "신고 게시글 등록 성공")
-    public Result postReport(@RequestBody Create dto, Authentication authentication) {
+    public ResultResponse<Result> postReport(@RequestBody @Valid Create dto,
+        Authentication authentication) {
 
         reportAuthorizer.requireByOneself(authentication, dto.getOwnerId());
-        return service.createReport(dto);
+        return ResultResponse.<Result>successBuilder()
+            .result(service.createReport(dto))
+            .successCode(INSERT_SUCCESS)
+            .build();
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "신고 게시글 단건 조회", description = "신고 게시글을 단건 조회합니다.")
     @ApiResponse(responseCode = "200", description = "신고 게시글 조회 성공")
-    public Result getReport(
+    public ResultResponse<Result> getReport(
         @Schema(description = "신고 게시글 식별자", example = "UUID")
         @PathVariable UUID id, Authentication authentication) {
 
         reportAuthorizer.requireReportOwner(authentication, id);
-        return service.readReport(id);
+
+        return ResultResponse.<Result>successBuilder()
+            .result(service.readReport(id))
+            .successCode(SELECT_SUCCESS)
+            .build();
     }
 
     @GetMapping
@@ -66,37 +81,50 @@ public class ReportController {
             + "일반 사용자의 경우 본인이 작성한 신고 게시글을 기준으로 검색합니다\n"
             + "관리자의 경우 모든 신고 게시글을 기준으로 검색합니다")
     @ApiResponse(responseCode = "200", description = "신고 게시글 전체 조회 성공")
-    public List<Result> getAllReport(Pageable pageable,
+    public ResultResponse<List<Result>> getAllReport(Pageable pageable,
         @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         UserRoleEnum role = userDetails.getUser().getRole();
+        List<Result> results;
         if (role.equals(UserRoleEnum.ADMIN)) {
-            return service.readAllReport(pageable);
+
+            results = service.readAllReport(pageable);
         } else {
-            return service.readAllReportByUserId(userDetails.getUser().getUserId(), pageable);
+            results = service.readAllReportByUserId(userDetails.getUser().getUserId(), pageable);
         }
+
+        return ResultResponse.<List<Result>>successBuilder()
+            .result(results)
+            .successCode(SELECT_SUCCESS)
+            .build();
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "신고 게시글 수정", description = "신고 게시글을 수정합니다.")
     @ApiResponse(responseCode = "200", description = "신고 게시글 수정 성공")
-    public Result putReport(
+    public ResultResponse<Result> putReport(
         @Schema(description = "신고 게시글 식별자", example = "UUID")
         @PathVariable UUID id,
-        @RequestBody Put dto, Authentication authentication) {
+        @RequestBody @Valid Put dto, Authentication authentication) {
 
         reportAuthorizer.requireReportOwner(authentication, id);
-        return service.putReport(id, dto);
+        return ResultResponse.<Result>successBuilder()
+            .result(service.putReport(id, dto))
+            .successCode(UPDATE_SUCCESS)
+            .build();
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "신고 게시글 삭제", description = "신고 게시글을 소프트 삭제합니다.")
     @ApiResponse(responseCode = "200", description = "신고 게시글 삭제 성공")
-    public Result.Deleted deleteReport(
+    public ResultResponse<Result.Deleted> deleteReport(
         @Schema(description = "신고 게시글 식별자", example = "UUID")
         @PathVariable UUID id, Authentication authentication) {
 
         reportAuthorizer.requireReportOwner(authentication, id);
-        return service.deleteReport(id, authentication);
+        return ResultResponse.<Result.Deleted>successBuilder()
+            .result(service.deleteReport(id, authentication))
+            .successCode(DELETE_SUCCESS)
+            .build();
     }
 }

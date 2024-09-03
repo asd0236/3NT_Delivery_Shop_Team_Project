@@ -5,6 +5,11 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 import lombok.With;
@@ -17,10 +22,20 @@ public interface ProductDto {
     @Builder
     class Create {
 
+        @NotNull(message = "식당 ID는 필수 항목입니다.")
         private final UUID restaurantId;
+
+        @NotBlank(message = "상품 이름을 입력해주세요.")
+        @Size(min = 1, max = 100, message = "상품 이름은 1자 이상 100자 이하로 입력해 주세요.")
         private final String name;
+
+        @Size(max = 500, message = "상품 설명은 500자 이하로 입력해 주세요.")
         private final String description;
+
+        @NotNull(message = "가격을 입력해 주세요.")
+        @Positive(message = "가격은 0보다 커야 합니다.")
         private final Integer price;
+
         private final String imageURL;
         private final Boolean isActivated;
 
@@ -41,10 +56,20 @@ public interface ProductDto {
     @Builder
     class Put {
 
+        @NotNull(message = "식당 ID는 필수 항목입니다.")
         private final UUID restaurantId;
+
+        @NotBlank(message = "상품 이름을 입력해주세요.")
+        @Size(min = 1, max = 100, message = "상품 이름은 1자 이상 100자 이하로 입력해 주세요.")
         private final String name;
+
+        @Size(max = 500, message = "상품 설명은 500자 이하로 입력해 주세요.")
         private final String description;
+
+        @NotNull(message = "가격을 입력해 주세요.")
+        @Positive(message = "가격은 0보다 커야 합니다.")
         private final Integer price;
+
         private final String imageURL;
 
         public Product asPutEntity(Product product) {
