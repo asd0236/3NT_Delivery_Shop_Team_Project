@@ -145,7 +145,7 @@ public class RestaurantController {
     public ResultResponse<Result> patchRestaurant(
             @Schema(description = "음식점 식별자", example = "UUID", required = true)
             @PathVariable UUID restaurantId,
-            @RequestBody @Valid Update dto, Authentication authentication) {
+            @RequestBody Update dto, Authentication authentication) {
         return ResultResponse.<Result>successBuilder()
             .result(service.updateRestaurant(restaurantId, dto, authentication))
             .successCode(UPDATE_SUCCESS)

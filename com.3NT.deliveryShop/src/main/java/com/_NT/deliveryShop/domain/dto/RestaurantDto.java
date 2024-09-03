@@ -62,27 +62,12 @@ public interface RestaurantDto {
     @Data
     @Builder
     class Update {
-
-        @NotBlank(message = "음식점 이름을 입력해주세요.")
         private String name;
-
-        @NotBlank(message = "음식점 카테고리를 입력해주세요.")
         private String categoryName;
-
-        @NotBlank(message = "전화번호를 입력해주세요.")
-        @Pattern(regexp = "^01(?:0|1|[6-9])-(?:\\d{3}|\\d{4})-\\d{4}$", message = "전화번호 형식이 올바르지 않습니다.")
         private String mobileNumber;
-
-        @NotBlank(message = "주소를 입력해주세요.")
         private String address;
-
-        @NotNull(message = "영업 시작 시간을 입력해주세요.")
         private LocalTime businessStartHours;
-
-        @NotNull(message = "영업 종료 시간을 입력해주세요.")
         private LocalTime businessEndHours;
-
-        @NotNull(message = "이미지를 입력해주세요.")
         private String imageURL;
     }
 
