@@ -19,6 +19,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.UUID;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -48,7 +50,7 @@ public class ReportController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "신고 게시글 등록", description = "신고 게시글을 등록합니다.")
     @ApiResponse(responseCode = "201", description = "신고 게시글 등록 성공")
-    public ResultResponse<Result> postReport(@RequestBody Create dto,
+    public ResultResponse<Result> postReport(@RequestBody @Valid Create dto,
         Authentication authentication) {
 
         reportAuthorizer.requireByOneself(authentication, dto.getOwnerId());
@@ -103,7 +105,7 @@ public class ReportController {
     public ResultResponse<Result> putReport(
         @Schema(description = "신고 게시글 식별자", example = "UUID")
         @PathVariable UUID id,
-        @RequestBody Put dto, Authentication authentication) {
+        @RequestBody @Valid Put dto, Authentication authentication) {
 
         reportAuthorizer.requireReportOwner(authentication, id);
         return ResultResponse.<Result>successBuilder()

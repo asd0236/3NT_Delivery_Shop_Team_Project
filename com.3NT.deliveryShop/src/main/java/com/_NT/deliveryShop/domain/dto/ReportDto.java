@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 import lombok.With;
@@ -17,8 +20,14 @@ public interface ReportDto {
     @Builder
     class Create {
 
+        @NotBlank(message = "유저 아이디를 입력해주세요.")
         private Long ownerId;
+
+        @NotBlank(message = "제목을 입력해주세요.")
+        @Size(min = 1, max = 100, message = "제목은 1자 이상 100자 이하로 입력해주세요.")
         private String title;
+
+        @NotBlank(message = "내용을 입력해주세요.")
         private String content;
 
         public Report asEntity(
@@ -35,8 +44,14 @@ public interface ReportDto {
     @Builder
     class Put {
 
+        @NotBlank(message = "유저 아이디를 입력해주세요.")
         private Long updater;
+
+        @NotBlank(message = "제목을 입력해주세요.")
+        @Size(min = 1, max = 100, message = "제목은 1자 이상 100자 이하로 입력해주세요.")
         private String title;
+
+        @NotBlank(message = "내용을 입력해주세요.")
         private String content;
     }
 

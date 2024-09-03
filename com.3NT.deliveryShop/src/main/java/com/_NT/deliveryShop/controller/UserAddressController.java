@@ -1,6 +1,8 @@
 package com._NT.deliveryShop.controller;
 
+import com._NT.deliveryShop.common.codes.ErrorCode;
 import com._NT.deliveryShop.common.codes.SuccessCode;
+import com._NT.deliveryShop.common.exception.CustomException;
 import com._NT.deliveryShop.common.response.ResultResponse;
 import com._NT.deliveryShop.domain.entity.UserRoleEnum;
 import com._NT.deliveryShop.security.UserDetailsImpl;
@@ -10,6 +12,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -37,7 +40,7 @@ public class UserAddressController {
     public ResultResponse<AddressResponse> createAddress(
             @Parameter(description = "유저 식별자", example = "1", required = true)
             @PathVariable Long userId,
-            @RequestBody CreateAddressRequest requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails
+            @RequestBody @Valid CreateAddressRequest requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         validateUserAccess(userId, userDetails);
 
@@ -105,7 +108,7 @@ public class UserAddressController {
             @PathVariable Long userId,
             @Schema(description = "배송지 식별자", example = "UUID", required = true)
             @PathVariable UUID addressId,
-            @RequestBody ModifyAddressRequest requestDto,
+            @RequestBody @Valid ModifyAddressRequest requestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         // 현재 인증된 사용자의 ID와 URL에 있는 ID가 일치하는지 확인
@@ -122,7 +125,7 @@ public class UserAddressController {
     private void validateUserAccess(Long userId, UserDetailsImpl userDetails) {
         // 현재 인증된 사용자의 ID와 URL에 있는 ID가 일치하는지 확인, ADMIN은 예외
         if (!userDetails.getUser().getUserId().equals(userId) && !userDetails.getUser().getRole().equals(UserRoleEnum.ADMIN)) {
-            throw new IllegalArgumentException("권한이 없습니다.");
+            throw new CustomException(ErrorCode.FORBIDDEN_ERROR, "해당 사용자의 권한이 없습니다.");
         }
     }
 }

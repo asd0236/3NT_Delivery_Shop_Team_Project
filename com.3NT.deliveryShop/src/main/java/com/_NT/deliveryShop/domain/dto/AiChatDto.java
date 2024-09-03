@@ -1,6 +1,7 @@
 package com._NT.deliveryShop.domain.dto;
 
 import com._NT.deliveryShop.domain.entity.AiChat;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,10 @@ public interface AiChatDto {
     @Data
     @Builder
     class Create {
+        @NotNull(message = "유저 ID를 입력해주세요.")
         private final Long userId;
+
+        @NotNull(message = "채팅 내용을 입력해주세요.")
         private final String content;
     }
 

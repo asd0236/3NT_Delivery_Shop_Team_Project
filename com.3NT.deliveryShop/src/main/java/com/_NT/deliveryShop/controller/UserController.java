@@ -20,6 +20,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Collection;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -51,7 +53,7 @@ public class UserController {
     @Operation(summary = "회원가입", description = "사용자를 등록합니다.")
     @ApiResponse(responseCode = "201", description = "사용자 등록 성공")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResultResponse<Result> createUser(@RequestBody Create userDto) {
+    public ResultResponse<Result> createUser(@RequestBody @Valid Create userDto) {
 
         return ResultResponse.<Result>successBuilder()
             .result(userService.createUser(userDto))
@@ -97,7 +99,7 @@ public class UserController {
     public ResultResponse<ModifyUserResult> modifyUser(
             @Schema(description = "사용자 식별자", example = "1", required = true)
             @PathVariable(value = "userId") Long userId,
-        @RequestBody Modify userDto,
+        @RequestBody @Valid Modify userDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails){
         return ResultResponse.<ModifyUserResult>successBuilder()
             .result(userService.modifyUser(userId, userDto, userDetails.getUser()))

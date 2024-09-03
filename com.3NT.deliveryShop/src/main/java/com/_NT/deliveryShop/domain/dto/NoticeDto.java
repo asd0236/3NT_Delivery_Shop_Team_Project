@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 import lombok.With;
@@ -17,8 +21,15 @@ public interface NoticeDto {
     @Builder
     class Create {
 
+        @NotNull(message = "유저 ID를 입력해주세요.")
         private Long ownerId;
+
+        @NotBlank(message = "제목을 입력해주세요.")
+        @Size(max = 100, message = "제목은 100자 이하로 입력해주세요.")
         private String title;
+
+        @NotBlank(message = "내용을 입력해주세요.")
+        @Size(max = 3000, message = "내용은 3000자 이하로 입력해주세요.")
         private String content;
 
         public Notice asEntity(
@@ -35,8 +46,15 @@ public interface NoticeDto {
     @Builder
     class Put {
 
+        @NotNull(message = "유저 ID를 입력해주세요.")
         private Long updater;
+
+        @NotBlank(message = "제목을 입력해주세요.")
+        @Size(max = 100, message = "제목은 100자 이하로 입력해주세요.")
         private String title;
+
+        @NotBlank(message = "내용을 입력해주세요.")
+        @Size(max = 3000, message = "내용은 3000자 이하로 입력해주세요.")
         private String content;
     }
 

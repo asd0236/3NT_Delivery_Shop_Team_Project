@@ -19,6 +19,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.UUID;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -50,7 +52,7 @@ public class NoticeController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "공지사항 등록", description = "공지사항을 등록합니다.")
     @ApiResponse(responseCode = "201", description = "공지사항 등록 성공")
-    public ResultResponse<Result> postNotice(@RequestBody Create dto,
+    public ResultResponse<Result> postNotice(@RequestBody @Valid Create dto,
         Authentication authentication) {
 
         noticeAuthorizer.requireByOneself(authentication, dto.getOwnerId());
@@ -111,7 +113,7 @@ public class NoticeController {
     public ResultResponse<Result> putNotice(
         @Schema(description = "공지사항 식별자", example = "UUID")
         @PathVariable UUID id,
-        @RequestBody Put dto, Authentication authentication) {
+        @RequestBody @Valid Put dto, Authentication authentication) {
 
         noticeAuthorizer.requireByOneself(authentication, dto.getUpdater());
         return ResultResponse.<Result>successBuilder()

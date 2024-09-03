@@ -17,6 +17,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Collection;
 import java.util.UUID;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -47,7 +49,7 @@ public class PaymentController {
     @Operation(summary = "결제 생성", description = "결제를 생성합니다.")
     @ApiResponse(responseCode = "201", description = "결제 생성 성공")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResultResponse<Response> createPayment(@RequestBody Create paymentDto,
+    public ResultResponse<Response> createPayment(@RequestBody @Valid Create paymentDto,
                                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResultResponse.<Response>successBuilder()
             .result(paymentService.createPayment(paymentDto, userDetails.getUser()))
